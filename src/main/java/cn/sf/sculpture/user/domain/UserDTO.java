@@ -7,42 +7,55 @@
 public class UserDTO {
 
     private String openid;
-    private String nickName;
+    
+    /**
+     * 用户名
+     */
+    private String username;
+    
+    /**
+     * 头像地址
+     */
     private String avatarUrl;
-    private String province;
-    private String city;
+
+    /**
+     * 手机号
+     */
+    private String phone;
     
     
+    
+    
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getOpenid() {
         return openid;
     }
+
     public void setOpenid(String openid) {
         this.openid = openid;
     }
-    public String getNickName() {
-        return nickName;
+
+    public String getUsername() {
+        return username;
     }
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+
+    public void setUsername(String username) {
+        this.username = username;
     }
+
     public String getAvatarUrl() {
         return avatarUrl;
     }
+
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
-    public String getProvince() {
-        return province;
-    }
-    public void setProvince(String province) {
-        this.province = province;
-    }
-    public String getCity() {
-        return city;
-    }
-    public void setCity(String city) {
-        this.city = city;
-    }
-    
     
 }
