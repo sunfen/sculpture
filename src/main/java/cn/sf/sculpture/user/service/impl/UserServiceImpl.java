@@ -23,11 +23,26 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository repository;
     
+    @Override
+    public User insert(final UserDTO userDTO) {
+        Assert.notNull(userDTO, "userDTO is null");
+        Assert.notNull(userDTO.getOpenid(), "userDTO is null");
+
+        User user = this.findByOpenid(userDTO.getOpenid());
+        
+        //insert user
+        if(user == null) {
+           user = this.insertByWechat(userDTO);
+        }
+
+       return user;
+    }
+    
+    
     /** (non-Javadoc)
      * @return 
      * @see cn.sf.sculpture.user.service.UserService#insertByWechat(cn.sf.sculpture.user.domain.UserDTO)
      */
-    @Override
     @Transactional
     public User insertByWechat(UserDTO user) {
         Assert.notNull(user, "user is null");
@@ -54,7 +69,5 @@ public class UserServiceImpl implements UserService {
          
         return repository.findByOpenid(openid);
     }
-
-
 
 }

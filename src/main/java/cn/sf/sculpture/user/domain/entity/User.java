@@ -1,12 +1,10 @@
  package cn.sf.sculpture.user.domain.entity;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
-import cn.sf.sculpture.common.domain.entity.StringDateConverter;
 
 /**
  * @author SunFen mail:1121788582@qq.com
@@ -35,18 +33,6 @@ public class User extends AbstractSecureObject{
     @Column(length = 11)
     private String phone;
     
-    
-    /**
-     * 修改密码验证码(前面存储验证码，后面存储发送验证码的时间，用`-`隔开)
-     */
-    @Column(length = 16)
-    private String identifyCode;
-    
-    /**
-     * 验证码发送时间
-     */
-    @Convert(converter = StringDateConverter.class)
-    private String sendIdentifyCodeTime;
 
     public String getUsername() {
         return username;
@@ -88,20 +74,5 @@ public class User extends AbstractSecureObject{
         this.avatarUrl = avatarUrl;
     }
 
-    public String getIdentifyCode() {
-        return identifyCode;
-    }
-
-    public void setIdentifyCode(String identifyCode) {
-        this.identifyCode = identifyCode;
-    }
-
-    public String getSendIdentifyCodeTime() {
-        return sendIdentifyCodeTime;
-    }
-
-    public void setSendIdentifyCodeTime(String sendIdentifyCodeTime) {
-        this.sendIdentifyCodeTime = sendIdentifyCodeTime;
-    }
     
 }
