@@ -1,19 +1,36 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.5.RELEASE'
+		mariadbClientVerion = '1.4.6'
 	}
 	repositories {
 		mavenCentral()
+		jcenter()
+		maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.jfrog.buildinfo:build-info-extractor-gradle:4.7.0")
 	}
 }
 
+
+plugins {
+	id "com.eriwen.gradle.css" version "2.14.0"
+	id "com.eriwen.gradle.js" version "2.14.1"
+	id 'net.saliman.cobertura' version '2.5.4'
+}
+
+apply plugin: 'war'
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'net.saliman.cobertura'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+
+
 
 group = 'cn.sf'
 version = '0.0.1-SNAPSHOT'
@@ -21,15 +38,155 @@ sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
+	maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+}
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+configurations {
+  
+	providedRuntime
+}
+
+
+
+compileJava {
+    options.compilerArgs << "-Xlint:unchecked"
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
+javascript.source {
+	common{
+		js {
+			srcDir 'src/main/resources/static/js/common'
+			include '**/*.js'
+		}
+	}
+}
+
+css.source {
+	common {
+		css {
+			srcDir 'src/main/resources/static/css/common'
+			include '**/*.css'
+		}
+	}
+}
+
+task combineCommonCss(type: com.eriwen.gradle.css.tasks.CombineCssTask) {
+	source = css.source.common.css.files
+    dest = file("${buildDir}/tmp/css/commoon.css")
+}
+
+task minifyCommonCss(type: com.eriwen.gradle.css.tasks.MinifyCssTask) {
+	source = combineCommonCss
+	dest = file("${buildDir}/tmp/css/common.min.css")
+    yuicompressor { // Optional
+        lineBreakPos = -1
+    }
+}
+
+
+task combineCommonJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
+	encoding='UTF-8'
+	source = javascript.source.common.js.files
+    dest = file("${buildDir}/tmp/js/common.js")
+}
+
+task minifyCommonJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+	source = combineCommonJs
+	dest = file("${buildDir}/tmp/js/common.min.js")
+	sourceMap = file("${buildDir}/tmp/js/common.sourcemap.json")
+	closure {
+        compilerOptions.languageIn = 'ECMASCRIPT6_STRICT'
+        compilerOptions.languageOut = 'ECMASCRIPT3'
+        //compilerOptions.languageIn = 'ECMASCRIPT6'
+        //compilerOptions.languageOut = 'ECMASCRIPT5'
+    }
+}
+
+war {
+
+	dependsOn 'minifyCommonJs'
+	dependsOn 'minifyCommonCss'
+	
+	rootSpec.exclude('**/js/common/')
+	rootSpec.exclude('**/css/')
+
+
+	from("${buildDir}/tmp/js") {
+		include '**/*min.js'
+		into 'WEB-INF/classes/static/js/'
+	}
+	
+	from("${buildDir}/tmp/css") {
+		include '**/*min.css'
+		into 'WEB-INF/classes/static/css/'
+	}	
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.web
+		}
+	}
+}
+
+artifactory {
+	contextUrl = 'http://192.168.1.8:8081/artifactory'
+	publish {
+		repository {
+			repoKey = 'libs-snapshot-local'
+			username = "${artifactory_username}"
+			password = "${artifactory_password}"
+		}
+		defaults {
+			publications('mavenJava')
+		}
+	}
 }
 
 
 dependencies {
-	implementation('org.springframework.boot:spring-boot-starter')
-	//implementation('org.springframework.boot:spring-boot-starter-parent')
-	implementation('org.springframework.boot:spring-boot-starter-jdbc')
-	implementation('org.springframework.boot:spring-boot-starter-web')
-	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
-	implementation('mysql:mysql-connector-java')
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	
+	// public libs
+	compile('org.springframework.boot:spring-boot-starter-aop')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('org.apache.shiro:shiro-spring:1.3.2')
+//	compile('org.springframework.boot:spring-boot-starter-data-redis')
+//	compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+//	compile('org.springframework.boot:spring-boot-starter-websocket')
+//	compile('org.springframework.boot:spring-boot-starter-mobile')
+//	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+//	compile('org.springframework.boot:spring-boot-starter-cache')
+//	compile("org.springframework.boot:spring-boot-starter-amqp")
+	
+	compile('com.github.qcloudsms:qcloudsms:1.0.5')
+	
+	//compile('org.flywaydb:flyway-core:5.1.1')
+	runtime('org.mariadb.jdbc:mariadb-java-client:2.2.6')
+	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
+
+
+
+
+cobertura {
+    coverageFormats = ['html', 'xml']
+    coverageIgnoreTrivial=true //Igonre getter setter
+    coverageCheckBranchRate = 100
+    coverageCheckLineRate = 100
+    coverageIgnores = ['org.slf4j.Logger.*']
+    coverageReportDir = new File("$buildDir/reports/cobertura") 
+
+}
+
+test.finalizedBy(project.tasks.cobertura)
