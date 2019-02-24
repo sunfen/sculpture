@@ -1,6 +1,8 @@
 package cn.sf.sculpture.user.service.impl;
 
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,5 +71,17 @@ public class UserServiceImpl implements UserService {
          
         return repository.findByOpenid(openid);
     }
+    
+    
+    /** (non-Javadoc)
+     * @see cn.sf.sculpture.user.service.UserService#findByOpenid(java.lang.String)
+     */
+    @Override
+    public User findCurrentUser() {
 
+        // 从SecurityUtils里边创建一个 subject
+        Subject subject = SecurityUtils.getSubject();
+        Object principal = subject.getPrincipal();
+        return (User)principal;
+    }
 }

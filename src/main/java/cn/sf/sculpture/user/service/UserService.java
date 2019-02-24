@@ -18,5 +18,8 @@ public interface UserService {
      * @return
      */
     User insert(UserDTO user);
+
+
+	User findCurrentUser();
  
 }
