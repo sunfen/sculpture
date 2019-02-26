@@ -29,12 +29,12 @@ public class ProjectSummary {
 	/**
 	 * 预计总工资
 	 */
-	private BigDecimal expectTotalWages;
+	private BigDecimal expectTotalWages  = new BigDecimal(0);
 	
 	/**
 	 * 实际总工资
 	 */
-	private BigDecimal actualTotalWages;
+	private BigDecimal actualTotalWages  = new BigDecimal(0);
 	
 	/**
 	 * 工作 几小时 几天

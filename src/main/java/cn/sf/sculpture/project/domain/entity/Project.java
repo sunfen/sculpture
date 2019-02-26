@@ -3,12 +3,14 @@ package cn.sf.sculpture.project.domain.entity;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
+import cn.sf.sculpture.common.domain.entity.StringDateConverter;
 import cn.sf.sculpture.user.domain.entity.User;
 
 
@@ -36,16 +38,19 @@ public class Project  extends AbstractSecureObject {
 	/**
 	 * 创建时间
 	 */
+	@Convert(converter = StringDateConverter.class)
 	private String createTime;
 	
 	/**
 	 * 开始时间
 	 */
+	@Convert(converter = StringDateConverter.class)
 	private String startTime;
 	
 	/**
 	 * 结束时间
 	 */
+	@Convert(converter = StringDateConverter.class)
 	private String endTime;
 
 	
@@ -65,19 +70,19 @@ public class Project  extends AbstractSecureObject {
      * 日工资
      */
     @Column(scale = 2 )
-    private BigDecimal dailyWages;
+    private BigDecimal dailyWages = new BigDecimal(0);
     
     /**
      * 预计总工资
      */
     @Column(scale = 2 )
-    private BigDecimal expectTotalWages;
+    private BigDecimal expectTotalWages = new BigDecimal(0);
     
     /**
      * 实际总工资
      */
     @Column(scale = 2 )
-    private BigDecimal actualTotalWages;
+    private BigDecimal actualTotalWages = new BigDecimal(0);
     
     
 	public String getAddress() {

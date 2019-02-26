@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import cn.sf.sculpture.project.domain.entity.Principal;
 import cn.sf.sculpture.project.repository.PrincipalRepository;
 import cn.sf.sculpture.project.service.PrincipalService;
+import cn.sf.sculpture.user.service.UserService;
 
 
 /**
@@ -18,7 +19,8 @@ import cn.sf.sculpture.project.service.PrincipalService;
  */
 @Component
 public class PrincipalServiceImpl implements PrincipalService {
-
+    @Autowired
+    private UserService userService;
     @Autowired
     private PrincipalRepository repository;
     
@@ -32,6 +34,8 @@ public class PrincipalServiceImpl implements PrincipalService {
         entity.setDeleted(false);
         entity.setName(principal.getName());
         entity.setPhone(principal.getPhone());
+        entity.setUser(userService.findCurrentUser());
+        
         return repository.save(entity);
          
     }

@@ -20,6 +20,11 @@ public class LogRecordDTO {
 	private String time;
 	
 	/**
+	 * 周几
+	 */
+	private String onMonday;
+	
+	/**
 	 * 加班/请假
 	 */
 	private String type;
@@ -78,6 +83,14 @@ public class LogRecordDTO {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+
+    public String getOnMonday() {
+        return onMonday;
+    }
+
+    public void setOnMonday(String onMonday) {
+        this.onMonday = onMonday;
+    }
 	
 	
 	

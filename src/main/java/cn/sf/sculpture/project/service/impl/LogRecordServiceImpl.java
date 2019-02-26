@@ -1,9 +1,14 @@
 package cn.sf.sculpture.project.service.impl;
 
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import cn.sf.sculpture.common.CommonUtil;
+import cn.sf.sculpture.common.domain.IndexDTO;
 import cn.sf.sculpture.project.domain.LogEnum;
 import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.entity.LogRecord;
@@ -47,8 +53,8 @@ public class LogRecordServiceImpl implements LogRecordService {
 		Assert.notNull(logRecord, "logRecord is null");
 	        
 		
-        final LocalDate date = LocalDate.parse(logRecord.getTime());
-        
+        final LocalDate date = CommonUtil.parserDate(logRecord.getTime());
+        date.atTime(8, 0, 0);
       	LogRecord entity = new LogRecord();
          
       	entity.setId(logRecord.getId());
@@ -57,8 +63,8 @@ public class LogRecordServiceImpl implements LogRecordService {
         entity.setHour(logRecord.getHour());
         entity.setProject(projectService.findOne(logRecord.getProjectId()));
         entity.setRemark(logRecord.getRemark());
-        entity.setTime(CommonUtil.formatter(date));
-        entity.setType(LogEnum.getHour(logRecord.getType()));
+        entity.setTime(CommonUtil.formatter(date.atTime(0, 0, 0)));
+        entity.setType(LogEnum.getValue(logRecord.getType()));
         
         entity.setUser(userService.findCurrentUser());
         
@@ -80,11 +86,12 @@ public class LogRecordServiceImpl implements LogRecordService {
 	
 	
 	@Override
-	public Page<LogRecordDTO> findRecentMonth(Pageable pageable) {
+	public Page<LogRecordDTO> findRecentMonth(Pageable pageable) throws Exception {
 		final LocalDateTime now = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
 		
 		final Page<LogRecord> results = 
-				repository.findByUserAndTimeAfterAndDeletedAndOrderByTimeDesc(userService.findCurrentUser(), now, false, pageable);
+				repository.findByUserAndTimeAfterAndDeletedOrderByTimeAsc(
+				    userService.findCurrentUser(), CommonUtil.formatter(now), false, pageable);
 			
 		return new PageImpl<>(this.convert(results.getContent()), pageable, results.getTotalElements());
 	}
@@ -93,8 +100,11 @@ public class LogRecordServiceImpl implements LogRecordService {
 
 	@Override
 	public List<LogRecordDTO> findBetween(Long projectId, LocalDateTime startTime,
-			LocalDateTime endTime) {
-		final List<LogRecord> results = repository.findByProjectIdAndUserAndTimeBetwwenAndDeletedAndOrderByTimeDesc(projectId, userService.findCurrentUser(), startTime, endTime, false);
+			LocalDateTime endTime) throws Exception {
+		
+	    final List<LogRecord> results =
+		    repository.findByProjectIdAndUserAndTimeBetweenAndDeletedOrderByTimeAsc(
+		        projectId, userService.findCurrentUser(),  CommonUtil.formatter(startTime), CommonUtil.formatter(endTime), false);
 		return this.convert(results);
 	}
 	
@@ -104,27 +114,77 @@ public class LogRecordServiceImpl implements LogRecordService {
 	public List<LogRecord> findBetweenInner(Long projectId,  LocalDateTime startTime,
 			LocalDateTime endTime) {
 		
-		return repository.findByProjectIdAndUserAndTimeBetwwenAndDeletedAndOrderByTimeDesc(projectId, userService.findCurrentUser(), startTime, endTime, false);
+		return repository.findByProjectIdAndUserAndTimeBetweenAndDeletedOrderByTimeAsc(
+		    projectId, userService.findCurrentUser(), CommonUtil.formatter(startTime), CommonUtil.formatter(endTime), false);
 	}
 	
-	
-	private List<LogRecordDTO> convert(List<LogRecord> source){
-		List<LogRecordDTO> contents = new ArrayList<>();
-		
-		for(final LogRecord log : source) {
-			
-			LogRecordDTO summary = new LogRecordDTO();
-			contents.add(summary);
-			
-			summary.setHour(log.getHour());
-			summary.setProjectId(log.getProject().getId());
-			summary.setTime(log.getTime());
-			summary.setRemark(log.getRemark());
-			summary.setType(LogEnum.valueOf(String.valueOf(log.getType())).getName());
-			
-		}
-		return contents;
-	}
 
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.LogRecordService#getMonthWagesAndWorkDays(cn.sf.sculpture.common.domain.IndexDTO)
+     */
+    @Override
+    public IndexDTO getMonthWagesAndWorkDays(IndexDTO dto) {
+        
+        final LocalDateTime now = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        
+        final List<LogRecord> results = 
+                repository.findByUserAndTimeAfterAndDeletedOrderByTimeAsc(
+                    userService.findCurrentUser(), CommonUtil.formatter(now), false);
+        
+        BigDecimal hours = new BigDecimal(0);
+        BigDecimal totalWages = new BigDecimal(0);
+        
+        for(final LogRecord result : results) {
+        
+            final BigDecimal dailyWages = result.getProject().getDailyWages();
+       
+            if(result.getType().equals(LogEnum.EXTRA_WORK.getValue())) {
+                hours.add(new BigDecimal(result.getHour()));
+                totalWages.add(dailyWages);
+                
+            }else if(result.getType().equals(LogEnum.WORK.getValue())) {
+                hours.add(new BigDecimal(result.getHour()));
+                totalWages.add(dailyWages.divide(new BigDecimal(result.getHour())));
+            }        
+        }
+        
+        dto.setWorkDays(hours.divide(new BigDecimal(8)));
+        dto.setMonthWages(totalWages);
+        
+        return dto;
+    }
+
+    
+    
+    private List<LogRecordDTO> convert(List<LogRecord> source) throws Exception{
+        List<LogRecordDTO> contents = new ArrayList<>();
+        
+        for(final LogRecord log : source) {
+            
+            LogRecordDTO summary = new LogRecordDTO();
+            contents.add(summary);
+            
+            summary.setHour(log.getHour());
+            summary.setProjectId(log.getProject().getId());
+            summary.setTime(CommonUtil.parserTime(log.getTime()).toLocalDate().toString());
+            summary.setRemark(log.getRemark());
+            summary.setType(LogEnum.getName(String.valueOf(log.getType())));
+            summary.setOnMonday(this.convertFm(log.getTime()));
+            
+        }
+        return contents;
+    }
+    
+    
+    
+    private String convertFm(String time) {
+        ZoneId zone = ZoneId.systemDefault();
+        Instant instant = CommonUtil.parserTime(time).atZone(zone).toInstant();
+        Date date = Date.from(instant);
+       
+        SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
+        return dateFm.format(date);
+    }
 
 }

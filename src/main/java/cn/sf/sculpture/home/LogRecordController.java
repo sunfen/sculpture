@@ -31,7 +31,7 @@ public class LogRecordController {
 	@GetMapping("search")
 	@ResponseBody
 	public Page<LogRecordDTO> allProjects(
-			@PageableDefault(page = 0, size = 7) Pageable pageable) {
+			@PageableDefault(page = 0, size = 7) Pageable pageable) throws Exception {
 	
 		return logRecordService.findRecentMonth(pageable);
 	}
@@ -76,7 +76,7 @@ public class LogRecordController {
 	
 	@GetMapping
 	@ResponseBody
-	public List<LogRecordDTO> search(Long projectId, String startime, String endtime){
+	public List<LogRecordDTO> search(Long projectId, String startime, String endtime) throws Exception{
 		
 		final LocalDateTime startDate = LocalDateTime.parse(startime);
 		final LocalDateTime endDate = LocalDateTime.parse(endtime);

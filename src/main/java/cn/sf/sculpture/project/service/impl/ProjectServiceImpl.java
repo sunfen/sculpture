@@ -2,9 +2,9 @@ package cn.sf.sculpture.project.service.impl;
 
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class ProjectServiceImpl implements ProjectService {
         		startDate.getYear(), startDate.getMonthValue(),
         		startDate.getDayOfMonth(), TimeEnum.getHour(project.getStartHour()), 0 ,0);
         
-        Project entity = repository.findByUserAndStartTimeAndDeleted(user, startTime, false);
+        Project entity = repository.findByUserAndStartTimeAndDeleted(user, CommonUtil.formatter(startTime), false);
         
         if(entity != null) {
         	
@@ -124,24 +124,27 @@ public class ProjectServiceImpl implements ProjectService {
     
     
     @Override
-    public ProjectDTO findNew() {
-    	Project project = repository.findFirstByUserAndOrderByStartTimeDesc(userService.findCurrentUser());
+    public ProjectDTO findNew() throws Exception {
+    	Project project = repository.findFirstByUserOrderByStartTimeDesc(userService.findCurrentUser());
     	if(project == null) {
     		return null;
     	}
     	
-    	LocalDateTime startDate = LocalDateTime.parse(project.getStartTime());
+    	LocalDateTime startDate = LocalDateTime.parse(project.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     	
     	ProjectDTO dto = new ProjectDTO();
+    	dto.setId(project.getId());
+    	dto.setName(project.getName());
     	dto.setAddress(project.getAddress());
     	dto.setPrincipal(project.getPrincipal());
     	dto.setDailyWages(project.getDailyWages());
+
     	dto.setEndTime(project.getEndTime());
-    	dto.setId(project.getId());
-    	dto.setName(project.getName());
-    	dto.setStartHour(TimeEnum.valueOf(String.valueOf(startDate.getMonthValue())).getName());
     	dto.setStartTime(project.getStartTime());
+    	dto.setStartHour(TimeEnum.getName(startDate.getMonthValue()));
     	
+    	dto.setActualTotalWages(project.getActualTotalWages());
+    	dto.setExpectTotalWages(project.getExpectTotalWages());
     	return dto;
     }
     
@@ -156,12 +159,36 @@ public class ProjectServiceImpl implements ProjectService {
     	}
     }
     
-    
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#findAll()
+     */
+    @Override
+    public List<ProjectSummary> findAll() {
+
+        final List<Project> results = repository.findByUserOrderByStartTimeDesc(userService.findCurrentUser());
+        
+        List<ProjectSummary> contents = new ArrayList<>();
+        
+        for(final Project project : results) {
+            
+            ProjectSummary summay = new ProjectSummary();
+            
+            summay.setAddress(project.getAddress());
+            summay.setId(project.getId());
+            summay.setName(project.getName());
+            summay.setPrincipal(project.getPrincipal().getName());
+            summay.setStartTime(project.getStartTime());
+            
+            contents.add(summay);
+        }
+        return contents;
+    }
     
     @Override
     public Page<ProjectSummary> findAll(Pageable pageable){
     	
-    	final Page<Project> results = repository.findByUserAndOrderByStartTimeDesc(userService.findCurrentUser(), pageable);
+    	final Page<Project> results = repository.findByUserOrderByStartTimeDesc(userService.findCurrentUser(), pageable);
     	
     	List<ProjectSummary> contents = new ArrayList<>();
     	
@@ -176,48 +203,55 @@ public class ProjectServiceImpl implements ProjectService {
     		summay.setPrincipal(project.getPrincipal().getName());
     		summay.setStartTime(project.getStartTime());
     		
+    		final LocalDateTime startDate = CommonUtil.parserTime(project.getStartTime());
+    		LocalDateTime endDate = LocalDateTime.now();
     		if(project.getEndTime() != null ) {
-    			
-    			final LocalDateTime startDate = LocalDateTime.parse(project.getStartTime());
-    			final LocalDateTime endDate = LocalDateTime.parse(project.getEndTime());
-    			
-    			final List<LogRecord> logs = logRecordService.findBetweenInner(project.getId(), startDate, endDate);
-    			
-    			List<LogRecord> leaveLogs = new ArrayList<>();
-    			List<LogRecord> extraLogs = new ArrayList<>();
-    			
-    			for(final LogRecord log : logs) {
-    				if(log.getType().equals(LogEnum.EXTRA_WORK.getHour())) {
-    					extraLogs.add(log);
-    				}else {
-    					leaveLogs.add(log);
-    				}
-    			}
-    			
-    			Duration duration = Duration.between(startDate, endDate);
-    			
-    			Double totalHours = Double.valueOf(duration.toHours());
-    			Double leaveWorkHours = 0.0;
-    			
-    			for(final LogRecord leave : leaveLogs) {
-    				leaveWorkHours += leave.getHour();
-    			}
-    			    			
-    			Double extraWorkHours = 0.0;
-    			
-    			for(final LogRecord extra : extraLogs) {
-    				extraWorkHours += extra.getHour();
-    			}
-    			    			
-    			summay.setLeaveWorks(this.convertHours(leaveWorkHours));
-    			
-    			summay.setExtraWorks(this.convertHours(extraWorkHours));
-    			summay.setWorks(this.convertHours(totalHours - leaveWorkHours - extraWorkHours));
-
-    			summay.setExpectTotalWages(project.getExpectTotalWages());
-    			summay.setActualTotalWages(project.getActualTotalWages());
+    		    
+    		    endDate =  CommonUtil.parserTime(project.getEndTime());
     		}
-    		
+    			
+			final List<LogRecord> logs = logRecordService.findBetweenInner(project.getId(), startDate, endDate);
+			
+			List<LogRecord> leaveLogs = new ArrayList<>();
+			List<LogRecord> extraLogs = new ArrayList<>();
+			List<LogRecord> waorkLogs = new ArrayList<>();
+			
+			for(final LogRecord log : logs) {
+				if(log.getType().equals(LogEnum.EXTRA_WORK.getValue())) {
+					extraLogs.add(log);
+				}else if(log.getType().equals(LogEnum.WORK.getValue())){
+				    waorkLogs.add(log);
+				}else {
+                    leaveLogs.add(log);
+                }
+			}
+			
+			Double leaveWorkHours = 0.0;
+			
+			for(final LogRecord leave : leaveLogs) {
+			    leaveWorkHours += leave.getHour();
+			}
+			
+			Double extraWorkHours = 0.0;
+            
+            for(final LogRecord extra : extraLogs) {
+                extraWorkHours += extra.getHour();
+            }
+
+            Double workHours = 0.0;
+		 
+			for(final LogRecord extra : waorkLogs) {
+			    workHours += extra.getHour();
+			}
+			    			
+			summay.setLeaveWorks(this.convertHours(leaveWorkHours));
+			
+			summay.setExtraWorks(this.convertHours(extraWorkHours));
+			summay.setWorks(this.convertHours(workHours));
+
+			summay.setExpectTotalWages(project.getExpectTotalWages());
+			summay.setActualTotalWages(project.getActualTotalWages());
+		
     		contents.add(summay);
     	}
     	
@@ -226,10 +260,12 @@ public class ProjectServiceImpl implements ProjectService {
     
     
     private String convertHours(Double hours){
-    	String day = String.valueOf( Math.floor( hours / 8 ) );
-    	String hour = String.valueOf( hours % 8);
+        int day =  (int)Math.floor( hours / 8 );
+        int hour = (int)(hours % 8);
     	
-    	return Integer.valueOf(day) + "天" + Integer.valueOf(hour)  + "小时";
+    	return day + "天" + hour + "小时";
+    	
+    	
     }
 
 	@Override
@@ -237,6 +273,9 @@ public class ProjectServiceImpl implements ProjectService {
 		
 		return repository.getOne(projectId);
 	}
+
+
+
 
 
 

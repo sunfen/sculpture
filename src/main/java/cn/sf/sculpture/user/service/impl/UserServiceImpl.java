@@ -82,6 +82,7 @@ public class UserServiceImpl implements UserService {
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
         Object principal = subject.getPrincipal();
-        return (User)principal;
+        String openId = (String)principal;
+        return repository.findByOpenid(openId);
     }
 }

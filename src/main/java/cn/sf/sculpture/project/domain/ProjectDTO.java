@@ -42,7 +42,17 @@ public class ProjectDTO {
 	/**
 	 * 日工资
 	 */
-	private BigDecimal dailyWages;
+	private BigDecimal dailyWages = new BigDecimal(0);
+	
+    /**
+     * 预计总工资
+     */
+    private BigDecimal expectTotalWages = new BigDecimal(0);
+    
+    /**
+     * 实际总工资
+     */
+    private BigDecimal actualTotalWages = new BigDecimal(0);
 	
 	public Long getId() {
 		return id;
@@ -108,6 +118,22 @@ public class ProjectDTO {
 	public void setDailyWages(BigDecimal dailyWages) {
 		this.dailyWages = dailyWages;
 	}
+
+    public BigDecimal getExpectTotalWages() {
+        return expectTotalWages;
+    }
+
+    public void setExpectTotalWages(BigDecimal expectTotalWages) {
+        this.expectTotalWages = expectTotalWages;
+    }
+
+    public BigDecimal getActualTotalWages() {
+        return actualTotalWages;
+    }
+
+    public void setActualTotalWages(BigDecimal actualTotalWages) {
+        this.actualTotalWages = actualTotalWages;
+    }
 
 	
 	

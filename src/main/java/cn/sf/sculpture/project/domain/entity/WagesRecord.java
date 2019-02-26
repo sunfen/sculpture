@@ -3,11 +3,13 @@ package cn.sf.sculpture.project.domain.entity;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
+import cn.sf.sculpture.common.domain.entity.StringDateConverter;
 
 
 /**
@@ -29,12 +31,13 @@ public class WagesRecord  extends AbstractSecureObject {
 	/**
 	 * 收入
 	 */
-	private BigDecimal wages;
+	private BigDecimal wages  = new BigDecimal(0);
 
 	
 	/**
 	 * 时间
 	 */
+    @Convert(converter = StringDateConverter.class)
 	private String createTime;
 	
 	/**

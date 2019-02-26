@@ -1,5 +1,7 @@
 package cn.sf.sculpture.project.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,7 +19,7 @@ public interface ProjectService {
      */
     void insert(ProjectDTO project) throws Exception;
 
-	ProjectDTO findNew();
+	ProjectDTO findNew() throws Exception;
 
 	void deleted(Long projectId);
 
@@ -26,6 +28,11 @@ public interface ProjectService {
 	Project findOne(Long projectId);
 
 	void updateTotalWages(Long projectId);
+
+    /**
+     * @return
+     */
+    List<ProjectSummary> findAll();
  
 	
 }

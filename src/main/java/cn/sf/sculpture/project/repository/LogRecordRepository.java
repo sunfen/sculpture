@@ -1,7 +1,6 @@
 package cn.sf.sculpture.project.repository;
 
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -19,16 +18,15 @@ import cn.sf.sculpture.user.domain.entity.User;
  */
 public interface LogRecordRepository extends JpaRepository<LogRecord, Long>{
 
+	Page<LogRecord> findByUserAndTimeBetweenAndDeletedOrderByTimeAsc(User findCurrentUser,String startTime,String endTime, Boolean deleted, Pageable pageable);
 	
+	List<LogRecord> findByUserAndTimeBetweenAndDeletedOrderByTimeAsc(User findCurrentUser,String startTime, String endTime, Boolean deleted);
+	
+	List<LogRecord> findByProjectIdAndUserAndTimeBetweenAndDeletedOrderByTimeAsc(Long projectId, User findCurrentUser,String startTime, String endTime, Boolean deleted);
+	
+	Page<LogRecord> findByUserAndTimeAfterAndDeletedOrderByTimeAsc(User findCurrentUser,String startTime, Boolean deleted, Pageable pageable);
 
-	Page<LogRecord> findByUserAndTimeBetwwenAndDeletedAndOrderByTimeDesc(User findCurrentUser,LocalDateTime startTime,LocalDateTime endTime, Boolean deleted, Pageable pageable);
-	
-	List<LogRecord> findByUserAndTimeBetwwenAndDeletedAndOrderByTimeDesc(User findCurrentUser,LocalDateTime startTime, LocalDateTime endTime, Boolean deleted);
-	
-	
-	List<LogRecord> findByProjectIdAndUserAndTimeBetwwenAndDeletedAndOrderByTimeDesc(Long projectId, User findCurrentUser,LocalDateTime startTime, LocalDateTime endTime, Boolean deleted);
-	
-	Page<LogRecord> findByUserAndTimeAfterAndDeletedAndOrderByTimeDesc(User findCurrentUser,LocalDateTime startTime, Boolean deleted, Pageable pageable);
+	List<LogRecord> findByUserAndTimeAfterAndDeletedOrderByTimeAsc(User findCurrentUser,String startTime, Boolean deleted);
 
 	
 }

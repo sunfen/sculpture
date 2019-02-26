@@ -14,6 +14,14 @@ public enum TimeEnum {
 		throw new Exception();
 	}
 	
+   public static String getName(Integer hour) throws Exception{
+        for(final TimeEnum time : TimeEnum.values()) {
+            if(time.getHour().equals(hour)) {
+                return time.getName();
+            }
+        }
+        throw new Exception();
+    }
 	
 	private String name;
 	private Integer hour;

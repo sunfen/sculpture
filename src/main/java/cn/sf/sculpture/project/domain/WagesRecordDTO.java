@@ -27,7 +27,7 @@ public class WagesRecordDTO {
 	/**
 	 * 收入
 	 */
-	private BigDecimal wages;
+	private BigDecimal wages  = new BigDecimal(0);
 
 	
 	/**

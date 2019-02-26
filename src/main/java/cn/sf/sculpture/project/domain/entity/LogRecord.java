@@ -1,12 +1,14 @@
 package cn.sf.sculpture.project.domain.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
+import cn.sf.sculpture.common.domain.entity.StringDateConverter;
 import cn.sf.sculpture.user.domain.entity.User;
 
 
@@ -35,12 +37,13 @@ public class LogRecord  extends AbstractSecureObject {
 	/**
 	 * 时间
 	 */
+	@Convert(converter = StringDateConverter.class)
 	private String time;
 	
 	/**
 	 * 加班/请假
 	 */
-	private Integer type;
+	private String type;
 
 	
 	/**
@@ -76,17 +79,17 @@ public class LogRecord  extends AbstractSecureObject {
 	}
 
 
-	public Integer getType() {
-		return type;
-	}
+	public String getType() {
+        return type;
+    }
 
 
-	public void setType(Integer type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
 
-	public String getRemark() {
+    public String getRemark() {
 		return remark;
 	}
 
@@ -114,5 +117,7 @@ public class LogRecord  extends AbstractSecureObject {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
+	
 	
 }
