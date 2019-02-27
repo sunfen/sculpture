@@ -1,8 +1,12 @@
  package cn.sf.sculpture.project.repository;
 
 
-import cn.sf.sculpture.project.domain.entity.Principal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import cn.sf.sculpture.project.domain.entity.Principal;
+import cn.sf.sculpture.user.domain.entity.User;
 
 /**
  * @author SunFen mail:1121788582@qq.com
@@ -10,5 +14,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface PrincipalRepository extends JpaRepository<Principal, Long>{
 
-
+    /**
+     * @param user
+     * @param pageable
+     * @return
+     */
+    Page<Principal> findByUser(User user, Pageable pageable);
 }

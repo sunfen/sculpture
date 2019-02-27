@@ -1,12 +1,15 @@
 package cn.sf.sculpture.project.domain.entity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
@@ -84,6 +87,11 @@ public class Project  extends AbstractSecureObject {
     @Column(scale = 2 )
     private BigDecimal actualTotalWages = new BigDecimal(0);
     
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
+    private List<WagesRecord> wagesRecords;
+    
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
+    private List<LogRecord> logRecords;
     
 	public String getAddress() {
 		return address;
@@ -183,7 +191,25 @@ public class Project  extends AbstractSecureObject {
 	public void setActualTotalWages(BigDecimal actualTotalWages) {
 		this.actualTotalWages = actualTotalWages;
 	}
-	
-	
+
+
+    public List<WagesRecord> getWagesRecords() {
+        return wagesRecords;
+    }
+
+
+    public void setWagesRecords(List<WagesRecord> wagesRecords) {
+        this.wagesRecords = wagesRecords;
+    }
+
+
+    public List<LogRecord> getLogRecords() {
+        return logRecords;
+    }
+
+
+    public void setLogRecords(List<LogRecord> logRecords) {
+        this.logRecords = logRecords;
+    }
 	
 }

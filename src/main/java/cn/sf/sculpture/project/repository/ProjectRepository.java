@@ -18,12 +18,12 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
 
 	Project findByUserAndStartTimeAndDeleted(User findCurrentUser, String startTime, Boolean deleted);
 
-	Project findFirstByUserOrderByStartTimeDesc(User findCurrentUser);
+	Project findFirstByUserAndDeletedOrderByStartTimeDesc(User findCurrentUser, Boolean deleted);
 
-	Page<Project> findByUserOrderByStartTimeDesc(User findCurrentUser, Pageable pageable);
+	Page<Project> findByUserAndDeletedOrderByStartTimeDesc(User findCurrentUser, Boolean deleted, Pageable pageable);
 
     /**
      * @param findCurrentUser
      */
-	List<Project> findByUserOrderByStartTimeDesc(User findCurrentUser);
+	List<Project> findByUserAndDeletedOrderByStartTimeDesc(User findCurrentUser, Boolean deleted);
 }

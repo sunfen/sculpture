@@ -4,7 +4,6 @@ package cn.sf.sculpture.project.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,7 @@ import cn.sf.sculpture.project.service.LogRecordService;
 import cn.sf.sculpture.project.service.PrincipalService;
 import cn.sf.sculpture.project.service.ProjectService;
 import cn.sf.sculpture.project.service.WagesRecordService;
+import cn.sf.sculpture.project.util.ProjectConvert;
 import cn.sf.sculpture.user.domain.entity.User;
 import cn.sf.sculpture.user.service.UserService;
 
@@ -43,6 +43,8 @@ import cn.sf.sculpture.user.service.UserService;
 @Component
 public class ProjectServiceImpl implements ProjectService {
     
+    @Autowired
+    private ProjectConvert projectConvert;
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -53,6 +55,9 @@ public class ProjectServiceImpl implements ProjectService {
     private LogRecordService logRecordService;
     @Autowired
     private WagesRecordService wagesRecordService;
+    
+    
+    
     
     @Override
     @Transactional
@@ -85,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
         	principal = principalService.insert(principal);
         }
  
-        
+        entity.setId(project.getId());
         entity.setDeleted(false);
         entity.setAddress(project.getAddress());
         entity.setCreateTime(CommonUtil.getNow());
@@ -97,8 +102,6 @@ public class ProjectServiceImpl implements ProjectService {
         repository.save(entity);
                
     }
-    
-    
     
     @Override
     @Transactional
@@ -125,27 +128,11 @@ public class ProjectServiceImpl implements ProjectService {
     
     @Override
     public ProjectDTO findNew() throws Exception {
-    	Project project = repository.findFirstByUserOrderByStartTimeDesc(userService.findCurrentUser());
+    	Project project = repository.findFirstByUserAndDeletedOrderByStartTimeDesc(userService.findCurrentUser(), false);
     	if(project == null) {
     		return null;
     	}
-    	
-    	LocalDateTime startDate = LocalDateTime.parse(project.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    	
-    	ProjectDTO dto = new ProjectDTO();
-    	dto.setId(project.getId());
-    	dto.setName(project.getName());
-    	dto.setAddress(project.getAddress());
-    	dto.setPrincipal(project.getPrincipal());
-    	dto.setDailyWages(project.getDailyWages());
-
-    	dto.setEndTime(project.getEndTime());
-    	dto.setStartTime(project.getStartTime());
-    	dto.setStartHour(TimeEnum.getName(startDate.getMonthValue()));
-    	
-    	dto.setActualTotalWages(project.getActualTotalWages());
-    	dto.setExpectTotalWages(project.getExpectTotalWages());
-    	return dto;
+    	return projectConvert.convertDTO(project);
     }
     
     
@@ -154,10 +141,31 @@ public class ProjectServiceImpl implements ProjectService {
     public void deleted(Long projectId) {
     	Project project = repository.getOne(projectId);
     	if(project != null) {
-    		project.setDeleted(true);
-    		repository.save(project);
+    		repository.delete(project);
     	}
     }
+    
+    
+
+    @Override
+    public Project findOne(Long projectId) {
+        
+        return repository.getOne(projectId);
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#getOne(java.lang.Long)
+     */
+    @Override
+    public ProjectDTO getOne(Long projectId) throws Exception {
+         final Project project = repository.getOne(projectId);
+         return projectConvert.convertDTO(project);
+    }
+    
+    
+    
     
 
     /* (non-Javadoc)
@@ -166,7 +174,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectSummary> findAll() {
 
-        final List<Project> results = repository.findByUserOrderByStartTimeDesc(userService.findCurrentUser());
+        final List<Project> results = repository.findByUserAndDeletedOrderByStartTimeDesc(userService.findCurrentUser(), false);
         
         List<ProjectSummary> contents = new ArrayList<>();
         
@@ -185,10 +193,12 @@ public class ProjectServiceImpl implements ProjectService {
         return contents;
     }
     
+    
     @Override
     public Page<ProjectSummary> findAll(Pageable pageable){
     	
-    	final Page<Project> results = repository.findByUserOrderByStartTimeDesc(userService.findCurrentUser(), pageable);
+    	final Page<Project> results = 
+    	    repository.findByUserAndDeletedOrderByStartTimeDesc(userService.findCurrentUser(), false, pageable);
     	
     	List<ProjectSummary> contents = new ArrayList<>();
     	
@@ -244,10 +254,10 @@ public class ProjectServiceImpl implements ProjectService {
 			    workHours += extra.getHour();
 			}
 			    			
-			summay.setLeaveWorks(this.convertHours(leaveWorkHours));
+			summay.setLeaveWorks(CommonUtil.convertHours(leaveWorkHours));
 			
-			summay.setExtraWorks(this.convertHours(extraWorkHours));
-			summay.setWorks(this.convertHours(workHours));
+			summay.setExtraWorks(CommonUtil.convertHours(extraWorkHours));
+			summay.setWorks(CommonUtil.convertHours(workHours));
 
 			summay.setExpectTotalWages(project.getExpectTotalWages());
 			summay.setActualTotalWages(project.getActualTotalWages());
@@ -257,26 +267,8 @@ public class ProjectServiceImpl implements ProjectService {
     	
     	return new PageImpl<>(contents, pageable, results.getTotalElements());
     }
+
     
     
-    private String convertHours(Double hours){
-        int day =  (int)Math.floor( hours / 8 );
-        int hour = (int)(hours % 8);
-    	
-    	return day + "天" + hour + "小时";
-    	
-    	
-    }
-
-	@Override
-	public Project findOne(Long projectId) {
-		
-		return repository.getOne(projectId);
-	}
-
-
-
-
-
 
 }

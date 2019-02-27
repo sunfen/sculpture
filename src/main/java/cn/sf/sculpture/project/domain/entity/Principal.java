@@ -1,10 +1,16 @@
 package cn.sf.sculpture.project.domain.entity;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
 import cn.sf.sculpture.user.domain.entity.User;
@@ -16,6 +22,7 @@ import cn.sf.sculpture.user.domain.entity.User;
  */
 @Table(name="principal")
 @Entity
+@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler", "fieldHandler", "projects" })
 public class Principal extends AbstractSecureObject{
 
     @Column(length = 64)
@@ -28,6 +35,10 @@ public class Principal extends AbstractSecureObject{
     @JoinColumn(nullable = false)
     private User user;
     
+    
+    
+    @OneToMany(mappedBy = "principal", cascade = CascadeType.REMOVE)
+    private List<Project> projects;
     
     
 	public String getName() {
@@ -53,5 +64,13 @@ public class Principal extends AbstractSecureObject{
 	public void setUser(User user) {
 		this.user = user;
 	}
-  
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
+	
 }

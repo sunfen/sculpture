@@ -25,7 +25,7 @@ public class WagesRecord  extends AbstractSecureObject {
 	/**
 	 * 项目
 	 */
-	@ManyToOne
+	@ManyToOne(targetEntity = Project.class)
 	private Project project;
 	
 	/**

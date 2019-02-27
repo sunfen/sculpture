@@ -2,13 +2,9 @@ package cn.sf.sculpture.project.service.impl;
 
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,21 +166,13 @@ public class LogRecordServiceImpl implements LogRecordService {
             summary.setTime(CommonUtil.parserTime(log.getTime()).toLocalDate().toString());
             summary.setRemark(log.getRemark());
             summary.setType(LogEnum.getName(String.valueOf(log.getType())));
-            summary.setOnMonday(this.convertFm(log.getTime()));
+            summary.setOnMonday(CommonUtil.convertWeek(log.getTime()));
             
         }
         return contents;
     }
     
     
-    
-    private String convertFm(String time) {
-        ZoneId zone = ZoneId.systemDefault();
-        Instant instant = CommonUtil.parserTime(time).atZone(zone).toInstant();
-        Date date = Date.from(instant);
-       
-        SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
-        return dateFm.format(date);
-    }
+ 
 
 }

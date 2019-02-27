@@ -33,6 +33,14 @@ public interface ProjectService {
      * @return
      */
     List<ProjectSummary> findAll();
+
+    /**
+     * @param projectId
+     * @return
+     * @throws Exception 
+     */
+    ProjectDTO getOne(Long projectId) throws Exception;
+
  
 	
 }

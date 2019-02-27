@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.sf.sculpture.common.domain.HttpState;
 import cn.sf.sculpture.project.domain.ProjectDTO;
+import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.ProjectSummary;
+import cn.sf.sculpture.project.service.PrincipalService;
 import cn.sf.sculpture.project.service.ProjectService;
 
 
@@ -27,6 +29,8 @@ public class ProjectController {
 
 	@Autowired
 	private ProjectService projectService;
+	@Autowired
+	private PrincipalService principalService;
 	
 	@GetMapping("search")
 	@ResponseBody
@@ -36,6 +40,17 @@ public class ProjectController {
 		return projectService.findAll(pageable);
 	}
 	
+    
+    
+    @GetMapping("search/principal")
+    @ResponseBody
+    public Page<ProjectPrincipalSummary> allPrincipals(
+        @PageableDefault(page = 0, size = 7) Pageable pageable) {
+        
+        return principalService.findAllByPrincipal(pageable);
+    }
+    
+    
 	
     @GetMapping("search/list")
     @ResponseBody
@@ -43,10 +58,16 @@ public class ProjectController {
         
         return projectService.findAll();
     }
+    
 
 
 
-	
+
+	/**
+	 * 新增或者编辑
+	 * @param project
+	 * @return
+	 */
 	@PostMapping
 	@ResponseBody
 	public HttpState<String> add(@RequestBody ProjectDTO project){
@@ -63,9 +84,14 @@ public class ProjectController {
 	}
 	
 	
+	/**
+	 * 删除
+	 * @param projectId
+	 * @return
+	 */
 	@DeleteMapping("{projectId}")
 	@ResponseBody
-	public HttpState<String> add(@PathVariable Long projectId){
+	public HttpState<String> deleted(@PathVariable Long projectId){
 		
 		try {
 			projectService.deleted(projectId);
@@ -77,6 +103,23 @@ public class ProjectController {
 		
 		return HttpState.success("删除成功！");
 	}
+	
+	
+	   
+	/**
+	 * 获取一个
+	 * @param projectId
+	 * @return
+	 * @throws Exception 
+	 */
+    @GetMapping("{projectId}")
+    @ResponseBody
+    public ProjectDTO get(@PathVariable Long projectId) throws Exception{
+        
+        return   projectService.getOne(projectId);
+    }
+    
+    
 	
 	@GetMapping
 	@ResponseBody
