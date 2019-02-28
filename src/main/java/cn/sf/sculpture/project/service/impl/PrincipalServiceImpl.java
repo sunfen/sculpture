@@ -2,7 +2,9 @@ package cn.sf.sculpture.project.service.impl;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import cn.sf.sculpture.common.domain.DTO;
+import cn.sf.sculpture.project.domain.PrincipalListDTO;
 import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.ProjectSummary;
 import cn.sf.sculpture.project.domain.entity.Principal;
@@ -20,6 +24,11 @@ import cn.sf.sculpture.project.repository.PrincipalRepository;
 import cn.sf.sculpture.project.service.PrincipalService;
 import cn.sf.sculpture.user.domain.entity.User;
 import cn.sf.sculpture.user.service.UserService;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 
 /**
@@ -36,7 +45,7 @@ public class PrincipalServiceImpl implements PrincipalService {
     @Autowired
     private PrincipalRepository repository;
     
-    
+    private static String[] LETTER = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",  "W",  "X",  "Y", "Z"};
     
     @Override
     @Transactional
@@ -113,8 +122,64 @@ public class PrincipalServiceImpl implements PrincipalService {
 
 
 
+    
+    @Override
+    public List<PrincipalListDTO> getList() throws BadHanyuPinyinOutputFormatCombination{
+       
+       
+        HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
+        defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
+        defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+        
+        final User user = userService.findCurrentUser();
+        final List<Principal> list = repository.findByUser(user);
+        
+        Map<String, List<DTO>> sets = new HashMap<>();
 
-
-
-
+        for(String letter : LETTER) {
+            
+            sets.put(letter, new ArrayList<>());
+        }
+        
+        for(final Principal principal : list) {
+            String key = null;
+            String name = principal.getName();
+            char[] arr = name.toCharArray();
+            if(arr == null || arr.length == 0) {
+                return null; 
+            }
+            char firstName = arr[0];
+            
+            if (firstName > 128) { //如果已经是字母就不用转换了
+                //获取当前汉字的全拼
+                String[] temp = PinyinHelper.toHanyuPinyinStringArray(firstName, defaultFormat);
+                if (temp != null) {
+                    firstName = temp[0].charAt(0);// 取首字母  
+                }
+            } else if (firstName >= 'a' && firstName <= 'z') {
+                 
+                firstName -= 32;
+            }else {
+                firstName = new String("#").toCharArray()[0];
+            }
+            key = new StringBuffer().append(firstName).toString().toUpperCase();
+           
+            if(key != null && key != ""){
+                List<DTO> values = sets.get(key);
+                values.add(new DTO(principal.getId(), principal.getName()));
+                sets.put(key, values);
+            }
+        }
+        List<PrincipalListDTO> results = new ArrayList<>();
+        int i = 0;
+      
+        for(String key : sets.keySet()) {
+            results.add(new PrincipalListDTO(i, key, sets.get(key)));
+            i ++;
+        }
+        results.add(new PrincipalListDTO(i, "", new ArrayList<>()));
+        return results;
+    }
+    
 }
+

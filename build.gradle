@@ -83,6 +83,9 @@ dependencies {
 //	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 //	compile('org.springframework.boot:spring-boot-starter-cache')
 //	compile("org.springframework.boot:spring-boot-starter-amqp")
+
+
+	compile('com.belerweb:pinyin4j:2.5.1')
 	
 	compile('com.github.qcloudsms:qcloudsms:1.0.5')
 	

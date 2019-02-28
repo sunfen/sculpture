@@ -1,6 +1,8 @@
  package cn.sf.sculpture.project.repository;
 
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +22,6 @@ public interface PrincipalRepository extends JpaRepository<Principal, Long>{
      * @return
      */
     Page<Principal> findByUser(User user, Pageable pageable);
+
+    List<Principal> findByUser(User user);
 }
