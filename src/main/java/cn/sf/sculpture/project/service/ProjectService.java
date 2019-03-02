@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.ProjectSummary;
 import cn.sf.sculpture.project.domain.entity.Project;
+import cn.sf.sculpture.user.domain.entity.User;
 
 public interface ProjectService {
 
@@ -43,6 +44,19 @@ public interface ProjectService {
      * @param project
      */
     void save(Project project);
+
+    /**
+     * @param principalId
+     * @param pageable
+     * @return
+     */
+    Page<ProjectSummary> findAllByPrincipalId(Long principalId, Pageable pageable);
+
+    /**
+     * @param user
+     * @return
+     */
+    Integer countByUser(User user);
 
  
 	

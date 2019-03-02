@@ -8,10 +8,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import cn.sf.sculpture.project.domain.CountDTO;
+import cn.sf.sculpture.project.service.PrincipalService;
+import cn.sf.sculpture.project.service.WagesRecordService;
 import cn.sf.sculpture.user.domain.UserDTO;
 import cn.sf.sculpture.user.domain.entity.User;
 import cn.sf.sculpture.user.repository.UserRepository;
 import cn.sf.sculpture.user.service.UserService;
+import cn.sf.sculpture.project.service.ProjectService;
 
 
 /**
@@ -24,6 +28,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private PrincipalService principalService;
+    @Autowired
+    private WagesRecordService wagesRecordService;
     
     @Override
     public User insert(final UserDTO userDTO) {
@@ -83,5 +93,25 @@ public class UserServiceImpl implements UserService {
         Object principal = subject.getPrincipal();
         String openId = (String)principal;
         return repository.findByOpenid(openId);
+    }
+
+
+    
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.user.service.UserService#count()
+     */
+    @Override
+    public CountDTO count() {
+         final User user = this.findCurrentUser();
+         CountDTO count = new CountDTO();
+         
+         count.setCountPrincipal(principalService.countByUser(user));
+         
+         count.setCountProject(projectService.countByUser(user));
+         
+         count.setCountWages(wagesRecordService.countByUser(user));
+         
+         
+         return count;
     }
 }

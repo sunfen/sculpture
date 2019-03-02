@@ -20,6 +20,7 @@ import cn.sf.sculpture.project.domain.entity.WagesRecord;
 import cn.sf.sculpture.project.repository.WagesRecordRepository;
 import cn.sf.sculpture.project.service.ProjectService;
 import cn.sf.sculpture.project.service.WagesRecordService;
+import cn.sf.sculpture.user.domain.entity.User;
 
 
 /**
@@ -134,6 +135,16 @@ public class WagesRecordServiceImpl implements WagesRecordService {
 		}
 		return contents;
 	}
+
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.WagesRecordService#countByUser(cn.sf.sculpture.user.domain.entity.User)
+     */
+    @Override
+    public BigDecimal countByUser(User user) {
+        return repository.countWagesByProjectUser(user);
+    }
 
 
 }

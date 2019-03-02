@@ -51,6 +51,17 @@ public class ProjectController {
     }
     
     
+    
+    
+    @GetMapping("search/principal/{principalId}")
+    @ResponseBody
+    public Page<ProjectSummary> getByPrincipal(
+        @PathVariable Long principalId,
+        @PageableDefault(page = 0, size = 7) Pageable pageable) {
+        
+        return projectService.findAllByPrincipalId(principalId, pageable);
+    }
+    
 	
     @GetMapping("search/list")
     @ResponseBody

@@ -2,7 +2,6 @@ package cn.sf.sculpture.project.domain;
 
 import java.util.List;
 
-import cn.sf.sculpture.common.domain.DTO;
 
 public class PrincipalListDTO {
 	
@@ -14,7 +13,7 @@ public class PrincipalListDTO {
 	 */
 	private String region;
 	
-	private List<DTO> principals;
+	private List<PrincipalDTO> principals;
 	
     public int getId() {
         return id;
@@ -32,15 +31,15 @@ public class PrincipalListDTO {
         this.region = region;
     }
 
-    public List<DTO> getPrincipals() {
+    public List<PrincipalDTO> getPrincipals() {
         return principals;
     }
 
-    public void setPrincipals(List<DTO> principals) {
+    public void setPrincipals(List<PrincipalDTO> principals) {
         this.principals = principals;
     }
 
-    public PrincipalListDTO(int id, String region, List<DTO> principals) {
+    public PrincipalListDTO(int id, String region, List<PrincipalDTO> principals) {
         super();
         this.id = id;
         this.region = region;

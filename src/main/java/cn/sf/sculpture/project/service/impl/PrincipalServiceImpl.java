@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import cn.sf.sculpture.common.domain.DTO;
+import cn.sf.sculpture.project.domain.PrincipalDTO;
 import cn.sf.sculpture.project.domain.PrincipalListDTO;
 import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.ProjectSummary;
@@ -133,7 +133,7 @@ public class PrincipalServiceImpl implements PrincipalService {
         final User user = userService.findCurrentUser();
         final List<Principal> list = repository.findByUser(user);
         
-        Map<String, List<DTO>> sets = new HashMap<>();
+        Map<String, List<PrincipalDTO>> sets = new HashMap<>();
 
         for(String letter : LETTER) {
             
@@ -164,8 +164,8 @@ public class PrincipalServiceImpl implements PrincipalService {
             key = new StringBuffer().append(firstName).toString().toUpperCase();
            
             if(key != null && key != ""){
-                List<DTO> values = sets.get(key);
-                values.add(new DTO(principal.getId(), principal.getName()));
+                List<PrincipalDTO> values = sets.get(key);
+                values.add(new PrincipalDTO(principal.getId(), principal.getName(), principal.getProjects().size()));
                 sets.put(key, values);
             }
         }
@@ -178,6 +178,16 @@ public class PrincipalServiceImpl implements PrincipalService {
         }
         results.add(new PrincipalListDTO(i, "", new ArrayList<>()));
         return results;
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.PrincipalService#countByUser(cn.sf.sculpture.user.domain.entity.User)
+     */
+    @Override
+    public Integer countByUser(User user) {
+         return repository.countByUser(user);
     }
     
 }

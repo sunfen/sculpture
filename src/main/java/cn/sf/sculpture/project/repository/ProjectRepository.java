@@ -21,9 +21,17 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
 	Project findFirstByUserOrderByStartTimeDesc(User findCurrentUser);
 
 	Page<Project> findByUserOrderByStartTimeDesc(User findCurrentUser, Pageable pageable);
+	
+	Page<Project> findByUserAndPrincipalIdOrderByStartTimeDesc(User findCurrentUser, Long principalId, Pageable pageable);
 
     /**
      * @param findCurrentUser
      */
 	List<Project> findByUserOrderByStartTimeDesc(User findCurrentUser);
+
+    /**
+     * @param user
+     * @return
+     */
+    Integer countByUser(User user);
 }

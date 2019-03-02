@@ -1,8 +1,10 @@
 package cn.sf.sculpture.project.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import cn.sf.sculpture.project.domain.WagesRecordDTO;
+import cn.sf.sculpture.user.domain.entity.User;
 
 public interface WagesRecordService {
 
@@ -26,5 +28,11 @@ public interface WagesRecordService {
 	 * @return
 	 */
 	List<WagesRecordDTO> findByProjectId(Long projectId);
+
+    /**
+     * @param user
+     * @return
+     */
+    BigDecimal countByUser(User user);
 
 }

@@ -24,4 +24,10 @@ public interface PrincipalRepository extends JpaRepository<Principal, Long>{
     Page<Principal> findByUser(User user, Pageable pageable);
 
     List<Principal> findByUser(User user);
+
+    /**
+     * @param user
+     * @return
+     */
+    Integer countByUser(User user);
 }

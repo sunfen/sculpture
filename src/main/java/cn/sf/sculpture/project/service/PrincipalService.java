@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import cn.sf.sculpture.project.domain.PrincipalListDTO;
 import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.entity.Principal;
+import cn.sf.sculpture.user.domain.entity.User;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 public interface PrincipalService {
@@ -41,4 +42,13 @@ public interface PrincipalService {
      * @throws BadHanyuPinyinOutputFormatCombination 
      */
     List<PrincipalListDTO> getList() throws BadHanyuPinyinOutputFormatCombination;
+
+
+    /**
+     * @param user
+     * @return
+     */
+    Integer countByUser(User user);
+
+
 }

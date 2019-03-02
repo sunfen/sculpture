@@ -184,6 +184,26 @@ public class ProjectServiceImpl implements ProjectService {
 
         final List<Project> results = repository.findByUserOrderByStartTimeDesc(userService.findCurrentUser());
         
+        
+        return this.convertSummary(results);
+    }
+    
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#findAllByPrincipalId(org.springframework.data.domain.Pageable)
+     */
+    @Override
+    public Page<ProjectSummary> findAllByPrincipalId(Long principalId, Pageable pageable) {
+        final Page<Project> results = repository.findByUserAndPrincipalIdOrderByStartTimeDesc(userService.findCurrentUser(), principalId, pageable);
+        
+        
+        return new PageImpl<>(this.convertSummary(results.getContent()), pageable, results.getTotalElements());
+    }
+    
+    
+    
+    
+    private List<ProjectSummary> convertSummary(final List<Project> results){
         List<ProjectSummary> contents = new ArrayList<>();
         
         for(final Project project : results) {
@@ -196,7 +216,7 @@ public class ProjectServiceImpl implements ProjectService {
             summay.setPrincipal(project.getPrincipal().getName());
             summay.setStartTime(project.getStartTime());
             summay.setDailyWages(project.getDailyWages());
-            
+            summay.setEndTime(project.getEndTime());
             contents.add(summay);
         }
         
@@ -273,7 +293,18 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
 
-    
+
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#countByUser(cn.sf.sculpture.user.domain.entity.User)
+     */
+    @Override
+    public Integer countByUser(User user) {
+        return repository.countByUser(user);
+    }
+
+
     
 
 }
