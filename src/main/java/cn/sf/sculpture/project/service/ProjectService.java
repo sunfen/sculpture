@@ -27,8 +27,6 @@ public interface ProjectService {
 
 	Project findOne(Long projectId);
 
-	void updateTotalWages(Long projectId);
-
     /**
      * @return
      */
@@ -40,6 +38,11 @@ public interface ProjectService {
      * @throws Exception 
      */
     ProjectDTO getOne(Long projectId) throws Exception;
+
+    /**
+     * @param project
+     */
+    void save(Project project);
 
  
 	

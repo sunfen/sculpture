@@ -26,7 +26,7 @@ public interface LogRecordService {
 	
 	Page<LogRecordDTO> findRecentMonth(Pageable pageable) throws Exception;
 	
-	List<LogRecord> findBetweenInner(Long projectId, LocalDateTime startTime, LocalDateTime endTime);
+	List<LogRecord> findByProjectId(Long projectId);
 	
 	List<LogRecordDTO> findBetween(Long projectId, LocalDateTime startTime, LocalDateTime endTime) throws Exception;
 
@@ -36,6 +36,16 @@ public interface LogRecordService {
      * @return
      */
     IndexDTO getMonthWagesAndWorkDays(IndexDTO dto);
+
+
+    /**
+     * 获取某年某月的日志
+     * @param year
+     * @param month
+     * @return
+     * @throws Exception 
+     */
+    List<LogRecordDTO> findBetween(Integer year, Integer month) throws Exception;
 
  
 	

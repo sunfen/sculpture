@@ -3,7 +3,6 @@ package cn.sf.sculpture.project.service;
 import java.util.List;
 
 import cn.sf.sculpture.project.domain.WagesRecordDTO;
-import cn.sf.sculpture.project.domain.entity.WagesRecord;
 
 public interface WagesRecordService {
 
@@ -15,13 +14,17 @@ public interface WagesRecordService {
      */
     void insert(WagesRecordDTO wagesRecord) throws Exception;
 
-
+    /**
+     * 删除
+     * @param logRecordId
+     */
 	void deleted(Long logRecordId);
 
-	
-	
+	/**
+	 * 项目的 工资结账记录
+	 * @param projectId
+	 * @return
+	 */
 	List<WagesRecordDTO> findByProjectId(Long projectId);
 
-	List<WagesRecord> findByProjectIdInner(Long projectId);
-	
 }

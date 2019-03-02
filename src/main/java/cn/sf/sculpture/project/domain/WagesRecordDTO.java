@@ -2,8 +2,6 @@ package cn.sf.sculpture.project.domain;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-
 
 /**
  * 项目工资日记
@@ -35,11 +33,18 @@ public class WagesRecordDTO {
 	 */
 	private String createTime;
 	
+	   
+    /**
+     * 时间
+     */
+    private String time;
+	
 	/**
 	 * 备注
 	 */
-	@Column(length=128, nullable = false)
 	private String remark;
+	
+	private String method;
 
 	
 	public BigDecimal getWages() {
@@ -90,5 +95,25 @@ public class WagesRecordDTO {
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
 	}
+
+
+    public String getTime() {
+        return time;
+    }
+
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+
+    public String getMethod() {
+        return method;
+    }
+
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
 	
 }

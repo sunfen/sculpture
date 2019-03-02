@@ -33,6 +33,11 @@ public class ProjectDTO {
 	 */
 	private String endTime;
 	
+	/**
+     * 结束时间格式小时
+     */
+    private String endHour;
+	
 	
 	/**
 	 * 地址
@@ -135,7 +140,13 @@ public class ProjectDTO {
         this.actualTotalWages = actualTotalWages;
     }
 
-	
-	
+    public String getEndHour() {
+        return endHour;
+    }
+
+    public void setEndHour(String endHour) {
+        this.endHour = endHour;
+    }
+
 	
 }

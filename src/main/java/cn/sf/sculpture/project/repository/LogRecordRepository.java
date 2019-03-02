@@ -18,15 +18,23 @@ import cn.sf.sculpture.user.domain.entity.User;
  */
 public interface LogRecordRepository extends JpaRepository<LogRecord, Long>{
 
-	Page<LogRecord> findByUserAndTimeBetweenAndDeletedOrderByTimeAsc(User findCurrentUser,String startTime,String endTime, Boolean deleted, Pageable pageable);
+	Page<LogRecord> findByUserAndTimeBetweenOrderByTimeAsc(User findCurrentUser,String startTime,String endTime,  Pageable pageable);
 	
-	List<LogRecord> findByUserAndTimeBetweenAndDeletedOrderByTimeAsc(User findCurrentUser,String startTime, String endTime, Boolean deleted);
+	List<LogRecord> findByUserAndTimeBetweenOrderByTimeAsc(User findCurrentUser,String startTime, String endTime);
 	
-	List<LogRecord> findByProjectIdAndUserAndTimeBetweenAndDeletedOrderByTimeAsc(Long projectId, User findCurrentUser,String startTime, String endTime, Boolean deleted);
-	
-	Page<LogRecord> findByUserAndTimeAfterAndDeletedOrderByTimeAsc(User findCurrentUser,String startTime, Boolean deleted, Pageable pageable);
+	List<LogRecord> findByProjectIdAndTimeBetweenOrderByTimeAsc(Long projectId, String startTime, String endTime);
 
-	List<LogRecord> findByUserAndTimeAfterAndDeletedOrderByTimeAsc(User findCurrentUser,String startTime, Boolean deleted);
+	List<LogRecord> findByProjectIdOrderByTimeAsc(Long projectId);
+	
+	Page<LogRecord> findByUserAndTimeAfterOrderByTimeAsc(User findCurrentUser,String startTime, Pageable pageable);
+
+	List<LogRecord> findByUserAndTimeAfterOrderByTimeAsc(User findCurrentUser,String startTime);
+
+    /**
+     * @param user
+     * @param time
+     */
+	LogRecord findByUserAndTime(User user, String time);
 
 	
 }

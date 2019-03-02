@@ -27,6 +27,11 @@ public class ProjectSummary {
 	private String endTime;
 	
 	/**
+	 * 日工资
+	 */
+	private BigDecimal dailyWages;
+	
+	/**
 	 * 预计总工资
 	 */
 	private BigDecimal expectTotalWages  = new BigDecimal(0);
@@ -145,6 +150,13 @@ public class ProjectSummary {
 	public void setExtraWorks(String extraWorks) {
 		this.extraWorks = extraWorks;
 	}
-	
+
+    public BigDecimal getDailyWages() {
+        return dailyWages;
+    }
+
+    public void setDailyWages(BigDecimal dailyWages) {
+        this.dailyWages = dailyWages;
+    }
 	
 }

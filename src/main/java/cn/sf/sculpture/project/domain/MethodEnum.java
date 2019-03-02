@@ -1,38 +1,39 @@
 package cn.sf.sculpture.project.domain;
 
-public enum LogEnum {
+public enum MethodEnum {
 
-	LEAVE_WORK("请假", "leave"),
-	EXTRA_WORK("加班", "extra"),
-    WORK("上班", "work");
+	CARD("银行卡", 1),
+	WEIXIN("微信", 3),
+    ALIPAY("支付宝", 5);
 	
-	public static String getValue(String name) {
-		for(final LogEnum time : LogEnum.values()) {
-			if(time.getValue().equals(name)) {
+	public static Integer getValue(String name) {
+		for(final MethodEnum time : MethodEnum.values()) {
+			if(time.getName().equals(name)) {
 				return time.getValue();
 			}
 		}
 	     throw new IllegalArgumentException();
 	}
 	
-   public static String getName(String value) {
-        for(final LogEnum time : LogEnum.values()) {
+   public static String getName(Integer value) {
+        for(final MethodEnum time : MethodEnum.values()) {
             if(time.getValue().equals(value)) {
                 return time.getName();
             }
         }
+        
         throw new IllegalArgumentException();
     }
-
 	
 	private String name;
-	private String value;
+	private Integer value;
 
-	
-	private LogEnum(String name, String value) {
+
+	private MethodEnum(String name, Integer value) {
 		this.name = name;
 		this.value = value;
 	}
+
 
 	public String getName() {
 		return name;
@@ -43,15 +44,12 @@ public enum LogEnum {
 		this.name = name;
 	}
 
-
-    public String getValue() {
+    public Integer getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Integer value) {
         this.value = value;
     }
 
-	
-	
 }

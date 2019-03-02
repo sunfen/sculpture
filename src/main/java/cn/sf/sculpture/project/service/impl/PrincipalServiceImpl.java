@@ -54,7 +54,6 @@ public class PrincipalServiceImpl implements PrincipalService {
         
         Principal entity = new Principal();
         
-        entity.setDeleted(false);
         entity.setName(principal.getName());
         entity.setPhone(principal.getPhone());
         entity.setUser(userService.findCurrentUser());

@@ -70,6 +70,12 @@ public class Project  extends AbstractSecureObject {
     private User user;
     
     /**
+     * 共工作多少小时
+     */
+    private Double totalWorkHour;
+    
+    
+    /**
      * 日工资
      */
     @Column(scale = 2 )
@@ -87,11 +93,17 @@ public class Project  extends AbstractSecureObject {
     @Column(scale = 2 )
     private BigDecimal actualTotalWages = new BigDecimal(0);
     
+    
+    
+    
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
     private List<WagesRecord> wagesRecords;
     
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
     private List<LogRecord> logRecords;
+    
+    
+    
     
 	public String getAddress() {
 		return address;
@@ -210,6 +222,16 @@ public class Project  extends AbstractSecureObject {
 
     public void setLogRecords(List<LogRecord> logRecords) {
         this.logRecords = logRecords;
+    }
+
+
+    public Double getTotalWorkHour() {
+        return totalWorkHour;
+    }
+
+
+    public void setTotalWorkHour(Double totalWorkHour) {
+        this.totalWorkHour = totalWorkHour;
     }
 	
 }

@@ -36,7 +36,33 @@ public class LogRecordDTO {
 	private String remark;
 
 	
-	public Long getId() {
+	private Integer year;
+	
+	private Integer month;
+	
+	private Integer day;
+	
+	
+    
+    public LogRecordDTO(String time, String onMonday, Integer year, Integer month, Integer day) {
+        super();
+        this.time = time;
+        this.onMonday = onMonday;
+        this.year = year;
+        this.month = month;
+        this.day = day;
+    }
+
+
+
+    /**
+     * 
+     */
+    public LogRecordDTO() {
+         super();
+    }
+
+    public Long getId() {
 		return id;
 	}
 
@@ -91,8 +117,29 @@ public class LogRecordDTO {
     public void setOnMonday(String onMonday) {
         this.onMonday = onMonday;
     }
-	
-	
-	
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public Integer getMonth() {
+        return month;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
+    }
+
+    public Integer getDay() {
+        return day;
+    }
+
+    public void setDay(Integer day) {
+        this.day = day;
+    }
 	
 }

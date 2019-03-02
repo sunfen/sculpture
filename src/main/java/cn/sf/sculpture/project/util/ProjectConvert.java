@@ -1,10 +1,10 @@
  package cn.sf.sculpture.project.util;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Component;
 
+import cn.sf.sculpture.common.CommonUtil;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.TimeEnum;
 import cn.sf.sculpture.project.domain.entity.Project;
@@ -22,7 +22,7 @@ public class ProjectConvert {
             return null;
         }
         
-        LocalDateTime startDate = LocalDateTime.parse(project.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        final LocalDateTime startDate = CommonUtil.parserTime(project.getStartTime());
         
         ProjectDTO dto = new ProjectDTO();
         dto.setId(project.getId());
@@ -31,12 +31,18 @@ public class ProjectConvert {
         dto.setPrincipal(project.getPrincipal());
         dto.setDailyWages(project.getDailyWages());
 
-        dto.setEndTime(project.getEndTime());
         dto.setStartTime(project.getStartTime());
-        dto.setStartHour(TimeEnum.getName(startDate.getMonthValue()));
+        dto.setStartHour(TimeEnum.getName(startDate.getHour()));
         
         dto.setActualTotalWages(project.getActualTotalWages());
         dto.setExpectTotalWages(project.getExpectTotalWages());
+        
+        if(project.getEndTime() != null) {
+            final LocalDateTime endDate = CommonUtil.parserTime(project.getEndTime());
+            dto.setEndTime(project.getEndTime());
+            dto.setEndHour(TimeEnum.getName(endDate.getHour()));
+        }
+        
         return dto;
     }
 }

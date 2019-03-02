@@ -51,7 +51,6 @@ public class UserServiceImpl implements UserService {
         
         User entity = new User();
         
-        entity.setDeleted(false);
         entity.setOpenid(user.getOpenid());
         entity.setUsername(user.getUsername());
         entity.setAvatarUrl(user.getAvatarUrl());

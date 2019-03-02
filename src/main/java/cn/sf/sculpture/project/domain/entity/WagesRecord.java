@@ -39,14 +39,24 @@ public class WagesRecord  extends AbstractSecureObject {
 	 */
     @Convert(converter = StringDateConverter.class)
 	private String createTime;
+    
+    /**
+     * 时间
+     */
+    @Convert(converter = StringDateConverter.class)
+    private String time;
 	
 	/**
 	 * 备注
 	 */
-	@Column(length=128, nullable = false)
+	@Column(length = 128, nullable = false)
 	private String remark;
 
-	
+	/**
+     * 收款方式
+     */
+    @Column(length = 32, nullable = false)
+    private Integer method;
 
 
 	public Project getProject() {
@@ -89,6 +99,23 @@ public class WagesRecord  extends AbstractSecureObject {
 	}
 
 
-	
+    public String getTime() {
+        return time;
+    }
+
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+
+    public Integer getMethod() {
+        return method;
+    }
+
+
+    public void setMethod(Integer method) {
+        this.method = method;
+    }
 	
 }

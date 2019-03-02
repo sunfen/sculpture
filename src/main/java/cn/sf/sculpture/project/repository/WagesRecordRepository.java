@@ -18,7 +18,7 @@ public interface WagesRecordRepository extends JpaRepository<WagesRecord, Long>{
 	
 
 	
-	List<WagesRecord> findByProjectIdAndDeletedOrderByCreateTimeDesc(Long projectId, Boolean deleted);
+	List<WagesRecord> findByProjectIdOrderByCreateTimeDesc(Long projectId);
 	
 
 }

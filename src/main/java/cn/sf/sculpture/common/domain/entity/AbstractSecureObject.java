@@ -1,13 +1,9 @@
 package cn.sf.sculpture.common.domain.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-
-import org.hibernate.annotations.ColumnDefault;
 
 
 
@@ -23,14 +19,14 @@ public abstract class AbstractSecureObject {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
     
-	
+/*	
 	@Convert(converter = BooleanIntegerConverter.class)
 	@Column(nullable=false)
 	@ColumnDefault("0")
-	protected Boolean deleted = false;
+	protected Boolean deleted = false;*/
 	
 	public AbstractSecureObject() {
-		this.deleted = false;
+		//this.deleted = false;
 	}
 
 	public Long getId() {
@@ -41,7 +37,7 @@ public abstract class AbstractSecureObject {
 		this.id = id;
 	}
 
-	public Boolean isDeleted() {
+/*	public Boolean isDeleted() {
 		return this.deleted;
 	}
 
@@ -51,13 +47,13 @@ public abstract class AbstractSecureObject {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
-	}
+	}*/
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((deleted == null) ? 0 : deleted.hashCode());
+	//	result = prime * result + ((deleted == null) ? 0 : deleted.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
@@ -71,11 +67,13 @@ public abstract class AbstractSecureObject {
 		if (getClass() != obj.getClass())
 			return false;
 		AbstractSecureObject other = (AbstractSecureObject) obj;
-		if (deleted == null) {
+	/*	if (deleted == null) {
 			if (other.deleted != null)
 				return false;
 		} else if (!deleted.equals(other.deleted))
-			return false;
+			return false;*/
+		
+		
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -89,7 +87,7 @@ public abstract class AbstractSecureObject {
      */
     @Override
     public String toString() {
-        return "AbstractSecureObject [id=" + id + ", deleted=" + deleted + "]";
+        return "AbstractSecureObject [id=" + id + "]";
     }
 	
 }

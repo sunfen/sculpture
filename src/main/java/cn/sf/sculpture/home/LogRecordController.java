@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +35,28 @@ public class LogRecordController {
 		return logRecordService.findRecentMonth(pageable);
 	}
 
+    
+    @GetMapping
+    @ResponseBody
+    public List<LogRecordDTO> search(Long projectId, String startime, String endtime) throws Exception{
+        
+        final LocalDateTime startDate = LocalDateTime.parse(startime);
+        final LocalDateTime endDate = LocalDateTime.parse(endtime);
 
+        return logRecordService.findBetween(projectId, startDate, endDate);
+    }
+    
+    
+    
+   
+    @GetMapping("search/{year}/{month}")
+    @ResponseBody
+    public List<LogRecordDTO> search(
+        @PathVariable Integer year,
+        @PathVariable Integer month) throws Exception{
+        
+        return logRecordService.findBetween(year, month);
+    }
 
 	
 	@PostMapping
@@ -54,34 +74,5 @@ public class LogRecordController {
 		return HttpState.success("新增成功！");
 	}
 	
-	
-	
-	@DeleteMapping("{logRecordId}")
-	@ResponseBody
-	public HttpState<String> add(@PathVariable Long logRecordId){
-		
-		try {
-			logRecordService.deleted(logRecordId);
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			return HttpState.error(e.getMessage());
-		}
-		
-		return HttpState.success("删除成功！");
-	}
-	
-	
-	
-	
-	@GetMapping
-	@ResponseBody
-	public List<LogRecordDTO> search(Long projectId, String startime, String endtime) throws Exception{
-		
-		final LocalDateTime startDate = LocalDateTime.parse(startime);
-		final LocalDateTime endDate = LocalDateTime.parse(endtime);
-
-		return logRecordService.findBetween(projectId, startDate, endDate);
-	}
 	
 }

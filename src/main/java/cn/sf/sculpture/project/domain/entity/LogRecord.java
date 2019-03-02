@@ -117,7 +117,5 @@ public class LogRecord  extends AbstractSecureObject {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
-	
-	
+
 }
