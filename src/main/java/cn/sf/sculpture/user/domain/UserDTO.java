@@ -57,5 +57,16 @@ public class UserDTO {
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
+
+    public UserDTO(String openid) {
+        super();
+        this.openid = openid;
+    }
+
+    public UserDTO() {
+        super();
+    }
+    
+    
     
 }

@@ -1,16 +1,22 @@
  package cn.sf.sculpture.home;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.Gson;
 
 import cn.sf.sculpture.common.domain.HttpState;
 import cn.sf.sculpture.user.domain.UserDTO;
@@ -28,6 +34,35 @@ public class LoginController {
     @Autowired
     private UserService userService;
     
+    
+    private static final String APPID = "wx39dc7970f2861ede";
+    private static final String SECRET = "b105e5b8e1cf7d321119ace33f89ebd2";
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    
+    @GetMapping("session/{code}")
+    public HttpState<Serializable> getAccessToken(@PathVariable String code) throws Exception {
+    
+        String accessTokenResult = 
+            restTemplate.getForObject(String.format("https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code&js_code=%s&appid=%s&secret=%s", code, APPID, SECRET), String.class);
+       
+        Gson gson = new Gson();
+        @SuppressWarnings("unchecked")
+        Map<String, String> result = gson.fromJson(accessTokenResult, Map.class);
+        
+        if(result != null && result.get("openid") != null) {
+        
+            return this.login(new UserDTO(result.get("openid")));
+        }
+        
+        return null;
+    }
+    
+    
+    
+    
     /**
      * 登录
      * @param password
@@ -38,6 +73,12 @@ public class LoginController {
     @ResponseBody
     public HttpState<Serializable> loginWechat(@RequestBody UserDTO user) {
         
+        return this.loginWechat(user);
+    }
+    
+    
+    
+    private HttpState<Serializable> login(UserDTO user){
         userService.insert(user);
 
         // 从SecurityUtils里边创建一个 subject

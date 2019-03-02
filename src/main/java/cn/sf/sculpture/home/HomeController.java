@@ -26,11 +26,7 @@ public class HomeController {
     @Autowired
     private UserService userService;
     
-    
-	@RequestMapping("")
-	public String getText() {
-		return "hello world";
-	}
+
 	
 	@GetMapping("index")
 	@ResponseBody
