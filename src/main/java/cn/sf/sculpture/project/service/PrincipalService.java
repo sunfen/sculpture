@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import cn.sf.sculpture.project.domain.PrincipalDTO;
 import cn.sf.sculpture.project.domain.PrincipalListDTO;
 import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.entity.Principal;
@@ -20,7 +21,11 @@ public interface PrincipalService {
      * @return
      */
     Principal insert(Principal principal);
- 
+
+    /**
+     * @param principal
+     */
+    void insert(PrincipalDTO principal);
     
     /**
      * 
@@ -49,6 +54,8 @@ public interface PrincipalService {
      * @return
      */
     Integer countByUser(User user);
+
+
 
 
 }

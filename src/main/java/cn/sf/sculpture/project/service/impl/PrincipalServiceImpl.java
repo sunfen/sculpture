@@ -61,7 +61,31 @@ public class PrincipalServiceImpl implements PrincipalService {
         return repository.save(entity);
          
     }
-    
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.PrincipalService#insert(cn.sf.sculpture.project.domain.PrincipalDTO)
+     */
+    @Override
+    @Transactional
+    public void insert(PrincipalDTO principal) {
+        Assert.notNull(principal, "Principal is null");
+       
+        Principal entity = null;
+        
+        if(principal.getId() != null) {
+            entity = repository.getOne(principal.getId());
+       
+        }else {
+            
+            entity = new Principal();
+            entity.setUser(userService.findCurrentUser());
+        }
+         
+        entity.setName(principal.getName());
+        
+        repository.save(entity);
+         
+    }
 
 
     /* (non-Javadoc)
@@ -189,6 +213,9 @@ public class PrincipalServiceImpl implements PrincipalService {
     public Integer countByUser(User user) {
          return repository.countByUser(user);
     }
+
+
+
     
 }
 
