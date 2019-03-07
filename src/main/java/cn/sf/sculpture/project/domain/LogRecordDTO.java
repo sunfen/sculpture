@@ -10,11 +10,6 @@ public class LogRecordDTO {
 	private Long projectId;
 	
 	/**
-	 * 小时
-	 */
-	private Double hour;
-	
-	/**
 	 * 时间
 	 */
 	private String time;
@@ -23,25 +18,34 @@ public class LogRecordDTO {
 	 * 周几
 	 */
 	private String onMonday;
-	
-	/**
-	 * 加班/请假
-	 */
-	private String type;
-
+    
+    /**
+     * 上午
+     */
+    private Double morningHour;
+    /**
+     * 下午
+     */
+    private Double afternoonHour;
+    /**
+     * 晚上
+     */
+    private Double eveningHour;
+    /**
+     * 共
+     */
+    private Double totalHour;
 	
 	/**
 	 * 备注
 	 */
 	private String remark;
-
 	
 	private Integer year;
 	
 	private Integer month;
 	
 	private Integer day;
-	
 	
     
     public LogRecordDTO(String time, String onMonday, Integer year, Integer month, Integer day) {
@@ -78,13 +82,6 @@ public class LogRecordDTO {
 		this.projectId = projectId;
 	}
 
-	public Double getHour() {
-		return hour;
-	}
-
-	public void setHour(Double hour) {
-		this.hour = hour;
-	}
 
 	public String getTime() {
 		return time;
@@ -94,13 +91,6 @@ public class LogRecordDTO {
 		this.time = time;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
 
 	public String getRemark() {
 		return remark;
@@ -141,5 +131,55 @@ public class LogRecordDTO {
     public void setDay(Integer day) {
         this.day = day;
     }
+
+
+
+    public Double getMorningHour() {
+        return morningHour;
+    }
+
+
+
+    public void setMorningHour(Double morningHour) {
+        this.morningHour = morningHour;
+    }
+
+
+
+    public Double getAfternoonHour() {
+        return afternoonHour;
+    }
+
+
+
+    public void setAfternoonHour(Double afternoonHour) {
+        this.afternoonHour = afternoonHour;
+    }
+
+
+
+    public Double getEveningHour() {
+        return eveningHour;
+    }
+
+
+
+    public void setEveningHour(Double eveningHour) {
+        this.eveningHour = eveningHour;
+    }
+
+
+
+    public Double getTotalHour() {
+        return totalHour;
+    }
+
+
+
+    public void setTotalHour(Double totalHour) {
+        this.totalHour = totalHour;
+    }
+    
+    
 	
 }

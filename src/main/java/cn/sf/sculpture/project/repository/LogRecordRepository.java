@@ -34,7 +34,7 @@ public interface LogRecordRepository extends JpaRepository<LogRecord, Long>{
      * @param user
      * @param time
      */
-	LogRecord findByUserAndTime(User user, String time);
+	LogRecord findByUserAndTimeAndProjectId(User user, String time, Long projectId);
 
 	
 }

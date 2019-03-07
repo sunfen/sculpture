@@ -23,8 +23,20 @@ public class IndexDTO {
 	/**
 	 * 出勤天数
 	 */
-	private BigDecimal workDays;
+	private String workDays;
 	
+	   
+    /**
+     * 加班天数
+     */
+    private String extraDays;
+    
+    /**
+     * 缺勤天数
+     */
+    private String leaveDays;
+	
+    
 	/**
 	 * 日记
 	 */
@@ -46,11 +58,11 @@ public class IndexDTO {
         this.monthWages = monthWages;
     }
 
-    public BigDecimal getWorkDays() {
+    public String getWorkDays() {
         return workDays;
     }
 
-    public void setWorkDays(BigDecimal workDays) {
+    public void setWorkDays(String workDays) {
         this.workDays = workDays;
     }
 
@@ -61,7 +73,21 @@ public class IndexDTO {
     public void setPageInfo(Page<LogRecordDTO> pageInfo) {
         this.pageInfo = pageInfo;
     }
-	
 
+    public String getExtraDays() {
+        return extraDays;
+    }
+
+    public void setExtraDays(String extraDays) {
+        this.extraDays = extraDays;
+    }
+
+    public String getLeaveDays() {
+        return leaveDays;
+    }
+
+    public void setLeaveDays(String leaveDays) {
+        this.leaveDays = leaveDays;
+    }
 	
 }

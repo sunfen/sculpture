@@ -30,9 +30,21 @@ public class LogRecord  extends AbstractSecureObject {
 	private Project project;
 	
 	/**
-	 * 小时
+	 * 上午
 	 */
-	private Double hour;
+	private Double morningHour;
+	/**
+	 * 上午
+	 */
+	private Double afternoonHour;
+	/**
+	 * 上午
+	 */
+	private Double eveningHour;
+	/**
+	 * 共
+	 */
+	private Double totalHour;
 	
 	/**
 	 * 时间
@@ -40,11 +52,6 @@ public class LogRecord  extends AbstractSecureObject {
 	@Convert(converter = StringDateConverter.class)
 	private String time;
 	
-	/**
-	 * 加班/请假
-	 */
-	private String type;
-
 	
 	/**
 	 * 备注
@@ -79,16 +86,6 @@ public class LogRecord  extends AbstractSecureObject {
 	}
 
 
-	public String getType() {
-        return type;
-    }
-
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-
     public String getRemark() {
 		return remark;
 	}
@@ -99,23 +96,52 @@ public class LogRecord  extends AbstractSecureObject {
 	}
 
 
-	public Double getHour() {
-		return hour;
-	}
-
-
-	public void setHour(Double hour) {
-		this.hour = hour;
-	}
-
-
 	public User getUser() {
 		return user;
 	}
 
-
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+
+    public Double getMorningHour() {
+        return morningHour;
+    }
+
+
+    public void setMorningHour(Double morningHour) {
+        this.morningHour = morningHour;
+    }
+
+
+    public Double getAfternoonHour() {
+        return afternoonHour;
+    }
+
+
+    public void setAfternoonHour(Double afternoonHour) {
+        this.afternoonHour = afternoonHour;
+    }
+
+
+    public Double getEveningHour() {
+        return eveningHour;
+    }
+
+
+    public void setEveningHour(Double eveningHour) {
+        this.eveningHour = eveningHour;
+    }
+
+
+    public Double getTotalHour() {
+        return totalHour;
+    }
+
+
+    public void setTotalHour(Double totalHour) {
+        this.totalHour = totalHour;
+    }
 
 }

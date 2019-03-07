@@ -16,18 +16,16 @@ import cn.sf.sculpture.user.domain.entity.User;
  */
 public interface ProjectRepository extends JpaRepository<Project, Long>{
 
-	Project findByUserAndStartTime(User findCurrentUser, String startTime);
+	Project findFirstByUserOrderByCreateTimeDesc(User findCurrentUser);
 
-	Project findFirstByUserOrderByStartTimeDesc(User findCurrentUser);
-
-	Page<Project> findByUserOrderByStartTimeDesc(User findCurrentUser, Pageable pageable);
+	Page<Project> findByUserOrderByCreateTimeDesc(User findCurrentUser, Pageable pageable);
 	
-	Page<Project> findByUserAndPrincipalIdOrderByStartTimeDesc(User findCurrentUser, Long principalId, Pageable pageable);
+	Page<Project> findByUserAndPrincipalIdOrderByCreateTimeDesc(User findCurrentUser, Long principalId, Pageable pageable);
 
     /**
      * @param findCurrentUser
      */
-	List<Project> findByUserOrderByStartTimeDesc(User findCurrentUser);
+	List<Project> findByUserOrderByCreateTimeDesc(User findCurrentUser);
 
     /**
      * @param user

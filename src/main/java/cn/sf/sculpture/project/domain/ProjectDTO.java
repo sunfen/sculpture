@@ -24,20 +24,9 @@ public class ProjectDTO {
 	private String startTime;
 	
 	/**
-	 * 开始时间格式小时
-	 */
-	private String startHour;
-	
-	/**
 	 * 结束时间
 	 */
 	private String endTime;
-	
-	/**
-     * 结束时间格式小时
-     */
-    private String endHour;
-	
 	
 	/**
 	 * 地址
@@ -100,14 +89,6 @@ public class ProjectDTO {
 		this.name = name;
 	}
 
-	public String getStartHour() {
-		return startHour;
-	}
-
-	public void setStartHour(String startHour) {
-		this.startHour = startHour;
-	}
-
 	public Principal getPrincipal() {
 		return principal;
 	}
@@ -138,14 +119,6 @@ public class ProjectDTO {
 
     public void setActualTotalWages(BigDecimal actualTotalWages) {
         this.actualTotalWages = actualTotalWages;
-    }
-
-    public String getEndHour() {
-        return endHour;
-    }
-
-    public void setEndHour(String endHour) {
-        this.endHour = endHour;
     }
 
 	

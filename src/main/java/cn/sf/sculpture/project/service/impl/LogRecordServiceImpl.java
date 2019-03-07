@@ -2,6 +2,7 @@ package cn.sf.sculpture.project.service.impl;
 
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import org.springframework.util.Assert;
 
 import cn.sf.sculpture.common.CommonUtil;
 import cn.sf.sculpture.common.domain.IndexDTO;
-import cn.sf.sculpture.project.domain.LogEnum;
 import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.entity.LogRecord;
 import cn.sf.sculpture.project.domain.entity.Project;
@@ -57,18 +57,22 @@ public class LogRecordServiceImpl implements LogRecordService {
 
 		final LocalDate date = CommonUtil.parserDate(logRecord.getTime());
         
-        LogRecord entity = repository.findByUserAndTime(user, CommonUtil.formatter(date.atTime(0, 0, 0)));
+        LogRecord entity = repository.findByUserAndTimeAndProjectId(user, CommonUtil.formatter(date), logRecord.getProjectId());
 
         if(entity == null) {
             entity =  new LogRecord();
             entity.setUser(user);
         }
         
-        entity.setHour(logRecord.getHour());
         entity.setProject(project);
         entity.setRemark(logRecord.getRemark());
-        entity.setTime(CommonUtil.formatter(date.atTime(8, 0, 0)));
-        entity.setType(LogEnum.getValue(logRecord.getType()));
+        
+        entity.setTime(CommonUtil.formatter(date));
+        
+        entity.setAfternoonHour(logRecord.getAfternoonHour());
+        entity.setEveningHour(logRecord.getEveningHour());
+        entity.setMorningHour(logRecord.getMorningHour());
+        entity.setTotalHour(logRecord.getTotalHour());
         
         repository.save(entity);
 	}
@@ -160,32 +164,38 @@ public class LogRecordServiceImpl implements LogRecordService {
     @Override
     public IndexDTO getMonthWagesAndWorkDays(IndexDTO dto) {
         
-        final LocalDateTime now = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        final LocalDate now = LocalDate.now().withDayOfMonth(1);
         
         final List<LogRecord> results = 
                 repository.findByUserAndTimeAfterOrderByTimeAsc(
                     userService.findCurrentUser(), CommonUtil.formatter(now));
         
-        
-        
-        BigDecimal hours = new BigDecimal(0);
+        BigDecimal totalHours = new BigDecimal(0);
+        BigDecimal totalExtraHours = new BigDecimal(0);
+        BigDecimal totalLeaveHours = new BigDecimal(0);
         BigDecimal totalWages = new BigDecimal(0);
         
         for(final LogRecord result : results) {
         
             final BigDecimal dailyWages = result.getProject().getDailyWages();
-       
-            if(result.getType().equals(LogEnum.EXTRA_WORK.getValue())) {
-                hours.add(new BigDecimal(result.getHour()));
-                totalWages.add(dailyWages);
-                
-            }else if(result.getType().equals(LogEnum.WORK.getValue())) {
-                hours.add(new BigDecimal(result.getHour()));
-                totalWages.add(dailyWages.divide(new BigDecimal(result.getHour())));
-            }        
+            Double morningHour = result.getMorningHour();
+            Double afternoonHour = result.getAfternoonHour();
+            Double eveningHour = result.getEveningHour();
+           
+            totalHours = totalHours.add(new BigDecimal(morningHour + afternoonHour));
+            totalExtraHours = totalExtraHours.add(new BigDecimal(eveningHour));
+            totalLeaveHours = totalLeaveHours.add(new BigDecimal(8 - (morningHour + afternoonHour)));
+           
+            //每小时平均工资
+            
+            BigDecimal ava = dailyWages.divide(new BigDecimal(8));
+
+            totalWages = totalWages.add(ava.multiply(new BigDecimal(morningHour + afternoonHour), MathContext.DECIMAL32));
         }
         
-        dto.setWorkDays(hours.divide(new BigDecimal(8)));
+        dto.setWorkDays(CommonUtil.convertHours(totalHours.doubleValue()));
+        dto.setExtraDays(CommonUtil.convertHours(totalExtraHours.doubleValue()));
+        dto.setLeaveDays(CommonUtil.convertHours(totalLeaveHours.doubleValue()));
         dto.setMonthWages(totalWages);
         
         return dto;
@@ -201,9 +211,9 @@ public class LogRecordServiceImpl implements LogRecordService {
      */
     @Override
     public List<LogRecordDTO> findBetween(Integer year, Integer month) throws Exception {
-         final LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0, 0);
-         final int days = startTime.toLocalDate().lengthOfMonth();
-         final LocalDateTime endDate = startTime.plusDays(days).withHour(0).withSecond(0).withMinute(0);
+         final LocalDate startTime = LocalDate.of(year, month, 1);
+         final int days = startTime.lengthOfMonth();
+         final LocalDate endDate = startTime.plusDays(days);
          
          final List<LogRecord> records = repository.findByUserAndTimeBetweenOrderByTimeAsc(
                  userService.findCurrentUser(), CommonUtil.formatter(startTime), CommonUtil.formatter(endDate));
@@ -219,16 +229,21 @@ public class LogRecordServiceImpl implements LogRecordService {
         List<LogRecordDTO> contents = new ArrayList<>();
         
         for(final LogRecord log : source) {
-            LocalDate date = CommonUtil.parserTime(log.getTime()).toLocalDate();
+            final LocalDate date = CommonUtil.parserDate(log.getTime());
+            
             LogRecordDTO summary = new LogRecordDTO();
             contents.add(summary);
             
-            summary.setHour(log.getHour());
             summary.setProjectId(log.getProject().getId());
+            
             summary.setTime(date.toString());
             summary.setRemark(log.getRemark());
-            summary.setType(LogEnum.getName(String.valueOf(log.getType())));
             summary.setOnMonday(CommonUtil.convertWeek(log.getTime()));
+            
+            summary.setAfternoonHour(log.getAfternoonHour());
+            summary.setEveningHour(log.getEveningHour());
+            summary.setMorningHour(log.getMorningHour());
+            summary.setTotalHour(log.getTotalHour());
             
             summary.setDay(date.getDayOfMonth());
             summary.setMonth(date.getMonthValue());

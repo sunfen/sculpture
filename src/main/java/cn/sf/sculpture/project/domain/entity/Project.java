@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
@@ -44,18 +45,6 @@ public class Project  extends AbstractSecureObject {
 	@Convert(converter = StringDateConverter.class)
 	private String createTime;
 	
-	/**
-	 * 开始时间
-	 */
-	@Convert(converter = StringDateConverter.class)
-	private String startTime;
-	
-	/**
-	 * 结束时间
-	 */
-	@Convert(converter = StringDateConverter.class)
-	private String endTime;
-
 	
 	/**
 	 * 地址
@@ -73,7 +62,6 @@ public class Project  extends AbstractSecureObject {
      * 共工作多少小时
      */
     private Double totalWorkHour;
-    
     
     /**
      * 日工资
@@ -95,11 +83,11 @@ public class Project  extends AbstractSecureObject {
     
     
     
-    
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
     private List<WagesRecord> wagesRecords;
     
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
+    @OrderBy("time asc")
     private List<LogRecord> logRecords;
     
     
@@ -120,10 +108,6 @@ public class Project  extends AbstractSecureObject {
 	}
 
 
-	public String getEndTime() {
-		return endTime;
-	}
-
 
 	public BigDecimal getExpectTotalWages() {
 		return expectTotalWages;
@@ -137,11 +121,6 @@ public class Project  extends AbstractSecureObject {
 
 	public Principal getPrincipal() {
 		return principal;
-	}
-
-
-	public String getStartTime() {
-		return startTime;
 	}
 
 
@@ -165,10 +144,6 @@ public class Project  extends AbstractSecureObject {
 	}
 
 
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
-	}
-
 
 	public void setExpectTotalWages(BigDecimal expectTotalWages) {
 		this.expectTotalWages = expectTotalWages;
@@ -182,11 +157,6 @@ public class Project  extends AbstractSecureObject {
 
 	public void setPrincipal(Principal principal) {
 		this.principal = principal;
-	}
-
-
-	public void setStartTime(String startTime) {
-		this.startTime = startTime;
 	}
 
 

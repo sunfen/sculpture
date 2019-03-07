@@ -18,6 +18,7 @@ import cn.sf.sculpture.project.domain.PrincipalDTO;
 import cn.sf.sculpture.project.domain.PrincipalListDTO;
 import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.ProjectSummary;
+import cn.sf.sculpture.project.domain.entity.LogRecord;
 import cn.sf.sculpture.project.domain.entity.Principal;
 import cn.sf.sculpture.project.domain.entity.Project;
 import cn.sf.sculpture.project.repository.PrincipalRepository;
@@ -131,7 +132,12 @@ public class PrincipalServiceImpl implements PrincipalService {
                  ProjectSummary pro = new ProjectSummary();
                  pro.setId(project.getId());
                  pro.setName(project.getName());
-                 pro.setStartTime(project.getStartTime());
+                 final List<LogRecord> records = project.getLogRecords();
+                 if(!records.isEmpty()) {
+                     
+                     pro.setStartTime(records.get(0).getTime());
+                 }
+                 
                  projectSummaries.add(pro);
              }
              
