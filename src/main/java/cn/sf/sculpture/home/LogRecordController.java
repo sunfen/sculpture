@@ -1,6 +1,6 @@
 package cn.sf.sculpture.home;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +40,8 @@ public class LogRecordController {
     @ResponseBody
     public List<LogRecordDTO> search(Long projectId, String startime, String endtime) throws Exception{
         
-        final LocalDateTime startDate = LocalDateTime.parse(startime);
-        final LocalDateTime endDate = LocalDateTime.parse(endtime);
+        final LocalDate startDate = LocalDate.parse(startime);
+        final LocalDate endDate = LocalDate.parse(endtime);
 
         return logRecordService.findBetween(projectId, startDate, endDate);
     }

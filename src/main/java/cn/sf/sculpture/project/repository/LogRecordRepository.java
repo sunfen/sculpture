@@ -22,19 +22,19 @@ public interface LogRecordRepository extends JpaRepository<LogRecord, Long>{
 	
 	List<LogRecord> findByUserAndTimeBetweenOrderByTimeAsc(User findCurrentUser,String startTime, String endTime);
 	
-	List<LogRecord> findByProjectIdAndTimeBetweenOrderByTimeAsc(Long projectId, String startTime, String endTime);
-
-	List<LogRecord> findByProjectIdOrderByTimeAsc(Long projectId);
-	
 	Page<LogRecord> findByUserAndTimeAfterOrderByTimeAsc(User findCurrentUser,String startTime, Pageable pageable);
 
 	List<LogRecord> findByUserAndTimeAfterOrderByTimeAsc(User findCurrentUser,String startTime);
+	
+	List<LogRecord> findByMorningProjectIdOrAfternoonProjectIdOrEveningProjectIdAndTimeBetweenOrderByTimeAsc(Long projectId, Long projectId1, Long projectId2, String startTime, String endTime);
+
+	List<LogRecord> findByMorningProjectIdOrAfternoonProjectIdOrEveningProjectIdOrderByTimeAsc(Long projectId, Long projectId1, Long projectId2);
 
     /**
      * @param user
      * @param time
      */
-	LogRecord findByUserAndTimeAndProjectId(User user, String time, Long projectId);
+	LogRecord findByUserAndTime(User user, String time);
 
 	
 }

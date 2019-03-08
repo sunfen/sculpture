@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
 import cn.sf.sculpture.common.domain.entity.StringDateConverter;
+import cn.sf.sculpture.common.domain.entity.StringDayConverter;
 
 
 /**
@@ -43,7 +44,7 @@ public class WagesRecord  extends AbstractSecureObject {
     /**
      * 时间
      */
-    @Convert(converter = StringDateConverter.class)
+    @Convert(converter = StringDayConverter.class)
     private String time;
 	
 	/**

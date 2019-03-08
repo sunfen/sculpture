@@ -8,7 +8,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import cn.sf.sculpture.common.domain.entity.AbstractSecureObject;
-import cn.sf.sculpture.common.domain.entity.StringDateConverter;
+import cn.sf.sculpture.common.domain.entity.StringDayConverter;
 import cn.sf.sculpture.user.domain.entity.User;
 
 
@@ -23,11 +23,25 @@ public class LogRecord  extends AbstractSecureObject {
 	
 	
 	/**
-	 * 项目
+	 * 上午项目
 	 */
 	@ManyToOne
 	@JoinColumn(nullable = false)
-	private Project project;
+	private Project morningProject;
+	
+	   /**
+     * 下午项目
+     */
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Project afternoonProject;
+    
+    /**
+     * 晚上项目
+     */
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Project eveningProject;
 	
 	/**
 	 * 上午
@@ -49,7 +63,7 @@ public class LogRecord  extends AbstractSecureObject {
 	/**
 	 * 时间
 	 */
-	@Convert(converter = StringDateConverter.class)
+	@Convert(converter = StringDayConverter.class)
 	private String time;
 	
 	
@@ -65,36 +79,21 @@ public class LogRecord  extends AbstractSecureObject {
     private User user;
 	
 
-
-	public Project getProject() {
-		return project;
-	}
-
-
-	public void setProject(Project project) {
-		this.project = project;
-	}
-
-
 	public String getTime() {
 		return time;
 	}
-
 
 	public void setTime(String time) {
 		this.time = time;
 	}
 
-
     public String getRemark() {
 		return remark;
 	}
 
-
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-
 
 	public User getUser() {
 		return user;
@@ -144,4 +143,27 @@ public class LogRecord  extends AbstractSecureObject {
         this.totalHour = totalHour;
     }
 
+    public Project getMorningProject() {
+        return morningProject;
+    }
+
+    public void setMorningProject(Project morningProject) {
+        this.morningProject = morningProject;
+    }
+
+    public Project getAfternoonProject() {
+        return afternoonProject;
+    }
+
+    public void setAfternoonProject(Project afternoonProject) {
+        this.afternoonProject = afternoonProject;
+    }
+
+    public Project getEveningProject() {
+        return eveningProject;
+    }
+
+    public void setEveningProject(Project eveningProject) {
+        this.eveningProject = eveningProject;
+    }
 }

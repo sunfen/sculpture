@@ -85,11 +85,18 @@ public class Project  extends AbstractSecureObject {
     
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
     private List<WagesRecord> wagesRecords;
-    
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "project")
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "morningProject")
     @OrderBy("time asc")
-    private List<LogRecord> logRecords;
+    private List<LogRecord> morningLogRecords;
     
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "afternoonProject")
+    @OrderBy("time asc")
+    private List<LogRecord> afternoonLogRecords;
+    
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "eveningProject")
+    @OrderBy("time asc")
+    private List<LogRecord> eveningLogRecords;
     
     
     
@@ -185,16 +192,6 @@ public class Project  extends AbstractSecureObject {
     }
 
 
-    public List<LogRecord> getLogRecords() {
-        return logRecords;
-    }
-
-
-    public void setLogRecords(List<LogRecord> logRecords) {
-        this.logRecords = logRecords;
-    }
-
-
     public Double getTotalWorkHour() {
         return totalWorkHour;
     }
@@ -202,6 +199,36 @@ public class Project  extends AbstractSecureObject {
 
     public void setTotalWorkHour(Double totalWorkHour) {
         this.totalWorkHour = totalWorkHour;
+    }
+
+
+    public List<LogRecord> getMorningLogRecords() {
+        return morningLogRecords;
+    }
+
+
+    public void setMorningLogRecords(List<LogRecord> morningLogRecords) {
+        this.morningLogRecords = morningLogRecords;
+    }
+
+
+    public List<LogRecord> getAfternoonLogRecords() {
+        return afternoonLogRecords;
+    }
+
+
+    public void setAfternoonLogRecords(List<LogRecord> afternoonLogRecords) {
+        this.afternoonLogRecords = afternoonLogRecords;
+    }
+
+
+    public List<LogRecord> getEveningLogRecords() {
+        return eveningLogRecords;
+    }
+
+
+    public void setEveningLogRecords(List<LogRecord> eveningLogRecords) {
+        this.eveningLogRecords = eveningLogRecords;
     }
 	
 }

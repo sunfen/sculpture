@@ -1,6 +1,6 @@
 package cn.sf.sculpture.project.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ public interface LogRecordService {
 	
 	List<LogRecord> findByProjectId(Long projectId);
 	
-	List<LogRecordDTO> findBetween(Long projectId, LocalDateTime startTime, LocalDateTime endTime) throws Exception;
+	List<LogRecordDTO> findBetween(Long projectId, LocalDate startTime, LocalDate endTime) throws Exception;
 
 
     /**

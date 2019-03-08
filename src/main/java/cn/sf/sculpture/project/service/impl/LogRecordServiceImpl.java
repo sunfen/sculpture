@@ -4,7 +4,6 @@ package cn.sf.sculpture.project.service.impl;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,26 +51,34 @@ public class LogRecordServiceImpl implements LogRecordService {
 	public void insert(LogRecordDTO logRecord) throws Exception {
 		Assert.notNull(logRecord, "logRecord is null");
 		
-		final Project project = projectService.findOne(logRecord.getProjectId());
+		
+		final Project morningProject = projectService.findOne(logRecord.getMorningProjectId());
+		
+		final Project afternoonProject = projectService.findOne(logRecord.getAfternoonProjectId());
+		
+		final Project eveningProject = projectService.findOne(logRecord.getEveningProjectId());
+	
 		final User user = userService.findCurrentUser();
 
 		final LocalDate date = CommonUtil.parserDate(logRecord.getTime());
         
-        LogRecord entity = repository.findByUserAndTimeAndProjectId(user, CommonUtil.formatter(date), logRecord.getProjectId());
+        LogRecord entity = repository.findByUserAndTime(user, CommonUtil.formatter(date));
 
         if(entity == null) {
             entity =  new LogRecord();
             entity.setUser(user);
+            entity.setTime(CommonUtil.formatter(date));
         }
         
-        entity.setProject(project);
+        entity.setMorningProject(morningProject);
+        entity.setAfternoonProject(afternoonProject);
+        entity.setEveningProject(eveningProject);
         entity.setRemark(logRecord.getRemark());
-        
-        entity.setTime(CommonUtil.formatter(date));
         
         entity.setAfternoonHour(logRecord.getAfternoonHour());
         entity.setEveningHour(logRecord.getEveningHour());
         entity.setMorningHour(logRecord.getMorningHour());
+
         entity.setTotalHour(logRecord.getTotalHour());
         
         repository.save(entity);
@@ -100,8 +107,8 @@ public class LogRecordServiceImpl implements LogRecordService {
 	    Integer startDays = size * (number - 1);
 	    startDays = startDays == 0 ? 0 : startDays + number -1;
 	    
-	    LocalDateTime endDate = LocalDateTime.now().minusDays(startDays).withHour(23).withMinute(59).withSecond(59);
-	    LocalDateTime startDate = endDate.minusDays(size).withHour(0).withMinute(0).withSecond(0);
+	    LocalDate endDate = LocalDate.now().minusDays(startDays);
+	    LocalDate startDate = endDate.minusDays(size);
 		
 		final Page<LogRecord> results = 
 				repository.findByUserAndTimeBetweenOrderByTimeAsc(
@@ -111,7 +118,7 @@ public class LogRecordServiceImpl implements LogRecordService {
 		
 		final List<LogRecordDTO> contens = this.convert(results.getContent());
 		
-		LocalDate endTime = endDate.toLocalDate();
+		LocalDate endTime = endDate;
 		
 		for(int i = 0; i <= size; i ++ ) {
 		    final String time = CommonUtil.formatter(endTime);
@@ -139,12 +146,12 @@ public class LogRecordServiceImpl implements LogRecordService {
 	
 
 	@Override
-	public List<LogRecordDTO> findBetween(Long projectId, LocalDateTime startTime,
-			LocalDateTime endTime) throws Exception {
+	public List<LogRecordDTO> findBetween(Long projectId, LocalDate startTime,
+	    LocalDate endTime) throws Exception {
 		
 	    final List<LogRecord> results =
-		    repository.findByProjectIdAndTimeBetweenOrderByTimeAsc(
-		        projectId,  CommonUtil.formatter(startTime), CommonUtil.formatter(endTime));
+		    repository.findByMorningProjectIdOrAfternoonProjectIdOrEveningProjectIdAndTimeBetweenOrderByTimeAsc(
+		        projectId, projectId, projectId, CommonUtil.formatter(startTime), CommonUtil.formatter(endTime));
 		return this.convert(results);
 	}
 	
@@ -153,7 +160,7 @@ public class LogRecordServiceImpl implements LogRecordService {
 	@Override
 	public List<LogRecord> findByProjectId(Long projectId) {
 		
-		return repository.findByProjectIdOrderByTimeAsc(projectId);
+		return repository.findByMorningProjectIdOrAfternoonProjectIdOrEveningProjectIdOrderByTimeAsc(projectId, projectId, projectId);
 	}
 	
 
@@ -177,7 +184,10 @@ public class LogRecordServiceImpl implements LogRecordService {
         
         for(final LogRecord result : results) {
         
-            final BigDecimal dailyWages = result.getProject().getDailyWages();
+            final BigDecimal morningDailyWages = result.getMorningProject().getDailyWages();
+            final BigDecimal afternoonDailyWages = result.getAfternoonProject().getDailyWages();
+            final BigDecimal eveningDailyWages = result.getEveningProject().getDailyWages();
+           
             Double morningHour = result.getMorningHour();
             Double afternoonHour = result.getAfternoonHour();
             Double eveningHour = result.getEveningHour();
@@ -188,9 +198,13 @@ public class LogRecordServiceImpl implements LogRecordService {
            
             //每小时平均工资
             
-            BigDecimal ava = dailyWages.divide(new BigDecimal(8));
+            BigDecimal avaMorning = morningDailyWages.divide(new BigDecimal(8));
+            BigDecimal avaAfternoon = afternoonDailyWages.divide(new BigDecimal(8));
+            BigDecimal avaEvening = eveningDailyWages.divide(new BigDecimal(8));
 
-            totalWages = totalWages.add(ava.multiply(new BigDecimal(morningHour + afternoonHour), MathContext.DECIMAL32));
+            totalWages = totalWages.add(avaMorning.multiply(new BigDecimal(morningHour ), MathContext.DECIMAL32));
+            totalWages = totalWages.add(avaAfternoon.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
+            totalWages = totalWages.add(avaEvening.multiply(new BigDecimal(eveningHour), MathContext.DECIMAL32));
         }
         
         dto.setWorkDays(CommonUtil.convertHours(totalHours.doubleValue()));
@@ -233,8 +247,11 @@ public class LogRecordServiceImpl implements LogRecordService {
             
             LogRecordDTO summary = new LogRecordDTO();
             contents.add(summary);
+            summary.setId(log.getId());
             
-            summary.setProjectId(log.getProject().getId());
+            summary.setMorningProjectId(log.getMorningProject().getId());
+            summary.setAfternoonProjectId(log.getAfternoonProject().getId());
+            summary.setEveningProjectId(log.getEveningProject().getId());
             
             summary.setTime(date.toString());
             summary.setRemark(log.getRemark());
@@ -243,7 +260,7 @@ public class LogRecordServiceImpl implements LogRecordService {
             summary.setAfternoonHour(log.getAfternoonHour());
             summary.setEveningHour(log.getEveningHour());
             summary.setMorningHour(log.getMorningHour());
-            summary.setTotalHour(log.getTotalHour());
+            summary.setTotalHour(log.getTotalHour()); 
             
             summary.setDay(date.getDayOfMonth());
             summary.setMonth(date.getMonthValue());

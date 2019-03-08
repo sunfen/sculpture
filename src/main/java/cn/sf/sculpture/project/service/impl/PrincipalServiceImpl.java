@@ -18,11 +18,11 @@ import cn.sf.sculpture.project.domain.PrincipalDTO;
 import cn.sf.sculpture.project.domain.PrincipalListDTO;
 import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.ProjectSummary;
-import cn.sf.sculpture.project.domain.entity.LogRecord;
 import cn.sf.sculpture.project.domain.entity.Principal;
 import cn.sf.sculpture.project.domain.entity.Project;
 import cn.sf.sculpture.project.repository.PrincipalRepository;
 import cn.sf.sculpture.project.service.PrincipalService;
+import cn.sf.sculpture.project.util.ProjectConvert;
 import cn.sf.sculpture.user.domain.entity.User;
 import cn.sf.sculpture.user.service.UserService;
 import net.sourceforge.pinyin4j.PinyinHelper;
@@ -40,7 +40,8 @@ import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombi
 @Component
 public class PrincipalServiceImpl implements PrincipalService {
     
-    
+    @Autowired
+    private ProjectConvert projectConvert;
     @Autowired
     private UserService userService;
     @Autowired
@@ -53,11 +54,17 @@ public class PrincipalServiceImpl implements PrincipalService {
     public Principal insert(final Principal principal) {
         Assert.notNull(principal, "Principal is null");
         
-        Principal entity = new Principal();
+        final User user = userService.findCurrentUser();
+        Principal entity = repository.findByUserAndName(user, principal.getName().trim());
+        if(entity != null) {
+            return entity;
+        }
         
-        entity.setName(principal.getName());
+        entity = new Principal();
+        
+        entity.setName(principal.getName().trim());
         entity.setPhone(principal.getPhone());
-        entity.setUser(userService.findCurrentUser());
+        entity.setUser(user);
         
         return repository.save(entity);
          
@@ -122,27 +129,10 @@ public class PrincipalServiceImpl implements PrincipalService {
              
              final List<Project> projects = principal.getProjects();
              
+             List<ProjectSummary> projectSummaries = projectConvert.convertSummary(projects);
+             
              summary.setTotal(projects.size());
-             
-             
-             List<ProjectSummary> projectSummaries = new ArrayList<>();
-             
-             for(final Project project : projects) {
-                 
-                 ProjectSummary pro = new ProjectSummary();
-                 pro.setId(project.getId());
-                 pro.setName(project.getName());
-                 final List<LogRecord> records = project.getLogRecords();
-                 if(!records.isEmpty()) {
-                     
-                     pro.setStartTime(records.get(0).getTime());
-                 }
-                 
-                 projectSummaries.add(pro);
-             }
-             
              summary.setProjects(projectSummaries);
-             
              summaries.add(summary);
          }
              
@@ -220,8 +210,5 @@ public class PrincipalServiceImpl implements PrincipalService {
          return repository.countByUser(user);
     }
 
-
-
-    
 }
 

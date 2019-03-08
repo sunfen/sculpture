@@ -30,4 +30,10 @@ public interface PrincipalRepository extends JpaRepository<Principal, Long>{
      * @return
      */
     Integer countByUser(User user);
+
+    /**
+     * @param name
+     * @return
+     */
+    Principal findByUserAndName(User user, String name);
 }

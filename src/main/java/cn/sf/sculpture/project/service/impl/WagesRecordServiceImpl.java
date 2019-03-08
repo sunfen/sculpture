@@ -3,8 +3,6 @@ package cn.sf.sculpture.project.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,7 @@ import cn.sf.sculpture.project.domain.entity.WagesRecord;
 import cn.sf.sculpture.project.repository.WagesRecordRepository;
 import cn.sf.sculpture.project.service.ProjectService;
 import cn.sf.sculpture.project.service.WagesRecordService;
+import cn.sf.sculpture.project.util.WagesRecordConvert;
 import cn.sf.sculpture.user.domain.entity.User;
 
 
@@ -31,7 +30,8 @@ import cn.sf.sculpture.user.domain.entity.User;
 @Component
 public class WagesRecordServiceImpl implements WagesRecordService {
 
-	
+	@Autowired
+	private WagesRecordConvert wagesRecordConvert;
 	@Autowired
 	private ProjectService projectService;
     
@@ -68,16 +68,13 @@ public class WagesRecordServiceImpl implements WagesRecordService {
         
         final LocalDate startDate = LocalDate.parse(wagesRecord.getTime());
         
-        final LocalDateTime startTime = LocalDateTime.of(
-                startDate.getYear(), startDate.getMonthValue(), startDate.getDayOfMonth(), 0, 0 ,0);
-        
-        entity.setTime(CommonUtil.formatter(startTime));
+        entity.setTime(CommonUtil.formatter(startDate));
         entity.setMethod(MethodEnum.getValue(wagesRecord.getMethod()));
         
         repository.save(entity);
         
         
-        totalWages.add(entity.getWages());
+        totalWages = totalWages.add(entity.getWages());
         project.setActualTotalWages(totalWages);
         projectService.save(project);
 		
@@ -96,7 +93,7 @@ public class WagesRecordServiceImpl implements WagesRecordService {
 		    final Project project = projectService.findOne(entity.getProject().getId());
 	        
 		    BigDecimal totalWages = project.getActualTotalWages();
-	        totalWages.subtract(entity.getWages());
+		    totalWages = totalWages.subtract(entity.getWages());
 	        project.setActualTotalWages(totalWages);
 	      
 	        projectService.save(project);
@@ -113,29 +110,9 @@ public class WagesRecordServiceImpl implements WagesRecordService {
 	public List<WagesRecordDTO> findByProjectId(Long projectId) {
 		
 		final List<WagesRecord> result = repository.findByProjectIdOrderByCreateTimeDesc(projectId);
-		return this.convert(result);
+		return wagesRecordConvert.convert(result);
 	}
 	
-	
-	private List<WagesRecordDTO> convert(List<WagesRecord> source){
-		List<WagesRecordDTO> contents = new ArrayList<>();
-		
-		for(final WagesRecord log : source) {
-			
-			WagesRecordDTO summary = new WagesRecordDTO();
-			contents.add(summary);
-			
-			summary.setProjectId(log.getProject().getId());
-			summary.setCreateTime(log.getCreateTime());
-			summary.setRemark(log.getRemark());
-			summary.setWages(log.getWages());
-			summary.setId(log.getId());
-			summary.setTime(log.getTime());
-			summary.setMethod(MethodEnum.getName(log.getMethod()));
-		}
-		return contents;
-	}
-
 
 
     /* (non-Javadoc)

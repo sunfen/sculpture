@@ -4,10 +4,6 @@ public class LogRecordDTO {
 	
 	private Long id;
 		
-	/**
-	 * 项目
-	 */
-	private Long projectId;
 	
 	/**
 	 * 时间
@@ -35,6 +31,21 @@ public class LogRecordDTO {
      * 共
      */
     private Double totalHour;
+
+    /**
+     * 上午项目
+     */
+    private Long morningProjectId;
+    
+    /**
+     * 下午项目
+     */
+    private Long afternoonProjectId;
+    
+    /**
+     * 晚上项目
+     */
+    private Long eveningProjectId;
 	
 	/**
 	 * 备注
@@ -73,15 +84,6 @@ public class LogRecordDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public Long getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(Long projectId) {
-		this.projectId = projectId;
-	}
-
 
 	public String getTime() {
 		return time;
@@ -132,52 +134,72 @@ public class LogRecordDTO {
         this.day = day;
     }
 
-
-
     public Double getMorningHour() {
         return morningHour;
     }
-
-
 
     public void setMorningHour(Double morningHour) {
         this.morningHour = morningHour;
     }
 
-
-
     public Double getAfternoonHour() {
         return afternoonHour;
     }
-
-
 
     public void setAfternoonHour(Double afternoonHour) {
         this.afternoonHour = afternoonHour;
     }
 
-
-
     public Double getEveningHour() {
         return eveningHour;
     }
-
-
 
     public void setEveningHour(Double eveningHour) {
         this.eveningHour = eveningHour;
     }
 
-
-
     public Double getTotalHour() {
         return totalHour;
     }
 
-
-
     public void setTotalHour(Double totalHour) {
         this.totalHour = totalHour;
+    }
+
+
+
+    public Long getMorningProjectId() {
+        return morningProjectId;
+    }
+
+
+
+    public void setMorningProjectId(Long morningProjectId) {
+        this.morningProjectId = morningProjectId;
+    }
+
+
+
+    public Long getAfternoonProjectId() {
+        return afternoonProjectId;
+    }
+
+
+
+    public void setAfternoonProjectId(Long afternoonProjectId) {
+        this.afternoonProjectId = afternoonProjectId;
+    }
+
+
+
+    public Long getEveningProjectId() {
+        return eveningProjectId;
+    }
+
+
+
+    public void setEveningProjectId(Long eveningProjectId) {
+        this.eveningProjectId = eveningProjectId;
     }
     
     

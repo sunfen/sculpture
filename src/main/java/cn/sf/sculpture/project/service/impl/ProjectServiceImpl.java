@@ -3,6 +3,7 @@ package cn.sf.sculpture.project.service.impl;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +75,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         	entity = new Project();
         	entity.setUser(user);
+        	entity.setCreateTime(CommonUtil.getNow());
         }
         
         Principal principal = project.getPrincipal();
@@ -82,7 +84,6 @@ public class ProjectServiceImpl implements ProjectService {
         	principal = principalService.insert(principal);
         }
  
-        entity.setCreateTime(CommonUtil.getNow());
         entity.setAddress(project.getAddress());
         entity.setName(project.getName());
         entity.setPrincipal(principal);
@@ -145,8 +146,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         final List<Project> results = repository.findByUserOrderByCreateTimeDesc(userService.findCurrentUser());
         
-        
-        return this.convertSummary(results);
+        return projectConvert.convertSummary(results);
     }
     
 
@@ -158,37 +158,12 @@ public class ProjectServiceImpl implements ProjectService {
         final Page<Project> results = repository.findByUserAndPrincipalIdOrderByCreateTimeDesc(userService.findCurrentUser(), principalId, pageable);
         
         
-        return new PageImpl<>(this.convertSummary(results.getContent()), pageable, results.getTotalElements());
+        return new PageImpl<>(projectConvert.convertSummary(results.getContent()), pageable, results.getTotalElements());
     }
     
     
     
-    
-    private List<ProjectSummary> convertSummary(final List<Project> results){
-        List<ProjectSummary> contents = new ArrayList<>();
-        
-        for(final Project project : results) {
-            
-            ProjectSummary summay = new ProjectSummary();
-            
-            summay.setAddress(project.getAddress());
-            summay.setId(project.getId());
-            summay.setName(project.getName());
-            summay.setPrincipal(project.getPrincipal().getName());
-            summay.setDailyWages(project.getDailyWages());
-            
-            final List<LogRecord> records = project.getLogRecords();
-            if(!records.isEmpty()) {
-                
-                summay.setStartTime(records.get(0).getTime());
-                summay.setEndTime(records.get(records.size()-1).getTime());
-            }
 
-            contents.add(summay);
-        }
-        
-        return contents;
-    }
     
     
     @Override
@@ -209,11 +184,33 @@ public class ProjectServiceImpl implements ProjectService {
     		summay.setAddress(project.getAddress());
     		summay.setDailyWages(project.getDailyWages());
     		
-    	    final List<LogRecord> records = project.getLogRecords();
-            if(!records.isEmpty()) {
-                
-                summay.setStartTime(records.get(0).getTime());
-                summay.setEndTime(records.get(records.size()-1).getTime());
+    		final BigDecimal dailyWages = project.getDailyWages();
+    		// 每小时平均工资
+            final BigDecimal ava = dailyWages.divide(new BigDecimal(8));
+            
+    	    final List<LogRecord> morningLogRecords = project.getMorningLogRecords();
+            final List<LogRecord> afternoonLogRecords = project.getAfternoonLogRecords();
+            final List<LogRecord> eveningLogRecords = project.getEveningLogRecords();
+            if(!morningLogRecords.isEmpty()) {
+                summay.setStartTime(morningLogRecords.get(0).getTime());
+            }
+            
+            if(!afternoonLogRecords.isEmpty() && summay.getStartTime() != null) {
+                final String time = afternoonLogRecords.get(0).getTime();
+                final LocalDate startDate = CommonUtil.parserDate(time);
+
+                if(startDate.isBefore(CommonUtil.parserDate(summay.getStartTime()))) {
+                    summay.setStartTime(time);
+                }
+            }
+            
+            if(!eveningLogRecords.isEmpty() && summay.getStartTime() != null) {
+                final String time = eveningLogRecords.get(0).getTime();
+                final LocalDate startDate = CommonUtil.parserDate(time);
+
+                if(startDate.isBefore(CommonUtil.parserDate(summay.getStartTime()))) {
+                    summay.setStartTime(time);
+                }
             }
             
             BigDecimal totalHours = new BigDecimal(0);
@@ -221,22 +218,38 @@ public class ProjectServiceImpl implements ProjectService {
             BigDecimal totalLeaveHours = new BigDecimal(0);
             BigDecimal totalWages = new BigDecimal(0);
             
-            for(final LogRecord result : records) {
+            for(final LogRecord result : morningLogRecords) {
             
-                final BigDecimal dailyWages = result.getProject().getDailyWages();
                 Double morningHour = result.getMorningHour();
-                Double afternoonHour = result.getAfternoonHour();
-                Double eveningHour = result.getEveningHour();
-                
-                totalHours.add(new BigDecimal(morningHour + afternoonHour));
-                totalExtraHours.add(new BigDecimal(eveningHour));
-                totalLeaveHours.add(new BigDecimal(8 - (morningHour + afternoonHour)));
-               
-                //每小时平均工资
-                
-                BigDecimal ava = dailyWages.divide(new BigDecimal(8));
+                totalHours.add(new BigDecimal(morningHour));
+                totalLeaveHours.add(new BigDecimal(4 - morningHour));
 
-                totalWages.add(ava.multiply(new BigDecimal(morningHour + afternoonHour), MathContext.DECIMAL32));
+                totalWages.add(ava.multiply(new BigDecimal(morningHour), MathContext.DECIMAL32));
+            }
+            
+            for(final LogRecord result : afternoonLogRecords) {
+                
+                final Double afternoonHour = result.getAfternoonHour();
+                totalHours.add(new BigDecimal(afternoonHour));
+                totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
+
+                totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
+            }
+            
+            for(final LogRecord result : afternoonLogRecords) {
+                
+                final Double afternoonHour = result.getAfternoonHour();
+                totalHours.add(new BigDecimal(afternoonHour));
+                totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
+
+                totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
+            }
+            
+            for(final LogRecord result : eveningLogRecords) {
+                
+                final Double eveningHour = result.getEveningHour();
+                totalExtraHours.add(new BigDecimal(eveningHour));
+                totalWages.add(ava.multiply(new BigDecimal(eveningHour), MathContext.DECIMAL32));
             }
 			    			
             summay.setWorks(CommonUtil.convertHours(totalHours.doubleValue()));
@@ -251,8 +264,6 @@ public class ProjectServiceImpl implements ProjectService {
     	
     	return new PageImpl<>(contents, pageable, results.getTotalElements());
     }
-
-
 
 
 

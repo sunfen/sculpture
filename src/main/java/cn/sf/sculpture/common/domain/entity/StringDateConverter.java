@@ -1,6 +1,6 @@
 package cn.sf.sculpture.common.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -16,31 +16,33 @@ import javax.persistence.Converter;
  */
 @Converter(autoApply = false)
 public class StringDateConverter implements AttributeConverter<String,Date> {
-
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+  
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-	@Override
-	public Date convertToDatabaseColumn(final String time) {
-	    if(time == null || time.isEmpty()) {
-	        return null;
-	    }
-	    
-	    try {
-	        final LocalDate localDateTime = LocalDate.parse(time, this.dateTimeFormatter);
-	        return Date.from(localDateTime.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    @Override
+    public Date convertToDatabaseColumn(final String time) {
+        if(time == null || time.isEmpty()) {
+            return null;
+        }
+        
+        try {
+            final LocalDateTime localDateTime = LocalDateTime.parse(time, this.dateTimeFormatter);
+            return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         } catch (DateTimeParseException e) {
             return null;
         }
-	}
+    }
 
-	@Override
-	public String convertToEntityAttribute(final Date date) {
-		if(date == null) {
-			return null;
-		}
-
-		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().format(this.dateTimeFormatter);
-	}
+    @Override
+    public String convertToEntityAttribute(final Date date) {
+        if(date == null) {
+            return null;
+        }
+        
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).format(this.dateTimeFormatter);
+    }
+    
+    
 	
 
 
