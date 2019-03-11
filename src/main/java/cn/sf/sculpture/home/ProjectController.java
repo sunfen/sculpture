@@ -1,6 +1,8 @@
 package cn.sf.sculpture.home;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,7 +42,17 @@ public class ProjectController {
 		return projectService.findAll(pageable);
 	}
 	
-    
+	
+	@GetMapping("search/{year}")
+    @ResponseBody
+    public Map<String, Object> allProjects(@PathVariable String year) {
+	    Map<String, Object> map = new HashMap<>();
+	    
+	    map.put("results", projectService.findAll(year));
+	    map.put("totalWages", projectService.totalWages(year));
+	    return map;
+    }
+
     
     @GetMapping("search/principal")
     @ResponseBody

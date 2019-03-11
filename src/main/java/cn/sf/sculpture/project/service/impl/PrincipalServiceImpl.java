@@ -79,14 +79,20 @@ public class PrincipalServiceImpl implements PrincipalService {
         Assert.notNull(principal, "Principal is null");
        
         Principal entity = null;
+        final User user = userService.findCurrentUser();
         
+        entity = repository.findByUserAndName(user, principal.getName().trim());
+        
+        if(entity != null) {
+            return;
+        }
         if(principal.getId() != null) {
             entity = repository.getOne(principal.getId());
        
         }else {
             
             entity = new Principal();
-            entity.setUser(userService.findCurrentUser());
+            entity.setUser(user);
         }
          
         entity.setName(principal.getName());

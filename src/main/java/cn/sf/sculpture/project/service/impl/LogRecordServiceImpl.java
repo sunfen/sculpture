@@ -235,11 +235,26 @@ public class LogRecordServiceImpl implements LogRecordService {
          
          return this.convert(records);
     }
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.LogRecordService#findBetween(java.lang.Long, java.lang.Integer, java.lang.Integer)
+     */
+    @Override
+    public List<LogRecordDTO> findBetween(Long projectId, Integer year, Integer month) {
+        final LocalDate startTime = LocalDate.of(year, month, 1);
+        final int days = startTime.lengthOfMonth();
+        final LocalDate endDate = startTime.plusDays(days);
+        
+        final List<LogRecord> records = repository.findByMorningProjectIdOrAfternoonProjectIdOrEveningProjectIdAndTimeBetweenOrderByTimeAsc(
+            projectId, projectId , projectId,  CommonUtil.formatter(startTime), CommonUtil.formatter(endDate));
+        
+        return this.convert(records);
+    }
     
     
     
-    
-    private List<LogRecordDTO> convert(List<LogRecord> source) throws Exception{
+    private List<LogRecordDTO> convert(List<LogRecord> source) {
         List<LogRecordDTO> contents = new ArrayList<>();
         
         for(final LogRecord log : source) {
@@ -268,6 +283,8 @@ public class LogRecordServiceImpl implements LogRecordService {
         }
         return contents;
     }
+
+
 
  
 

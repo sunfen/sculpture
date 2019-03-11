@@ -1,5 +1,7 @@
  package cn.sf.sculpture.project.util;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +134,101 @@ public class ProjectConvert {
             contents.add(summay);
         }
         
+        return contents;
+    }
+    
+    
+    public List<ProjectSummary> convertSummaries(List<Project> sources) {
+        List<ProjectSummary> contents = new ArrayList<>();
+        
+        for(final Project project : sources) {
+            
+            ProjectSummary summay = new ProjectSummary();
+            
+            summay.setId(project.getId());
+            summay.setName(project.getName());
+            summay.setPrincipal(project.getPrincipal().getName());
+            summay.setAddress(project.getAddress());
+            summay.setDailyWages(project.getDailyWages());
+            summay.setExpectTotalWages(project.getExpectTotalWages());
+            summay.setActualTotalWages(project.getActualTotalWages());
+            
+            
+            
+            final BigDecimal dailyWages = project.getDailyWages();
+            // 每小时平均工资
+            final BigDecimal ava = dailyWages.divide(new BigDecimal(8));
+            
+            final List<LogRecord> morningLogRecords = project.getMorningLogRecords();
+            final List<LogRecord> afternoonLogRecords = project.getAfternoonLogRecords();
+            final List<LogRecord> eveningLogRecords = project.getEveningLogRecords();
+            if(!morningLogRecords.isEmpty()) {
+                summay.setStartTime(morningLogRecords.get(0).getTime());
+            } 
+            
+            if(!afternoonLogRecords.isEmpty() && summay.getStartTime() != null) {
+                final String time = afternoonLogRecords.get(0).getTime();
+                final LocalDate startDate = CommonUtil.parserDate(time);
+
+                if(startDate.isBefore(CommonUtil.parserDate(summay.getStartTime()))) {
+                    summay.setStartTime(time);
+                }
+            }
+            
+            if(!eveningLogRecords.isEmpty() && summay.getStartTime() != null) {
+                final String time = eveningLogRecords.get(0).getTime();
+                final LocalDate startDate = CommonUtil.parserDate(time);
+
+                if(startDate.isBefore(CommonUtil.parserDate(summay.getStartTime()))) {
+                    summay.setStartTime(time);
+                }
+            }
+            
+            BigDecimal totalHours = new BigDecimal(0);
+            BigDecimal totalExtraHours = new BigDecimal(0);
+            BigDecimal totalLeaveHours = new BigDecimal(0);
+            BigDecimal totalWages = new BigDecimal(0);
+            
+            for(final LogRecord result : morningLogRecords) {
+            
+                Double morningHour = result.getMorningHour();
+                totalHours.add(new BigDecimal(morningHour));
+                totalLeaveHours.add(new BigDecimal(4 - morningHour));
+
+                totalWages.add(ava.multiply(new BigDecimal(morningHour), MathContext.DECIMAL32));
+            }
+            
+            for(final LogRecord result : afternoonLogRecords) {
+                
+                final Double afternoonHour = result.getAfternoonHour();
+                totalHours.add(new BigDecimal(afternoonHour));
+                totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
+
+                totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
+            }
+            
+            for(final LogRecord result : afternoonLogRecords) {
+                
+                final Double afternoonHour = result.getAfternoonHour();
+                totalHours.add(new BigDecimal(afternoonHour));
+                totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
+
+                totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
+            }
+            
+            for(final LogRecord result : eveningLogRecords) {
+                
+                final Double eveningHour = result.getEveningHour();
+                totalExtraHours.add(new BigDecimal(eveningHour));
+                totalWages.add(ava.multiply(new BigDecimal(eveningHour), MathContext.DECIMAL32));
+            }
+                            
+            summay.setWorks(CommonUtil.convertHours(totalHours.doubleValue()));
+            summay.setLeaveWorks(CommonUtil.convertHours(totalLeaveHours.doubleValue()));
+            summay.setExtraWorks(CommonUtil.convertHours(totalExtraHours.doubleValue()));
+
+            contents.add(summay);
+        }
         return contents;
     }
 }

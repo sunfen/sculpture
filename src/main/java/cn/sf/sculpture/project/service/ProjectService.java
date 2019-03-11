@@ -1,5 +1,6 @@
 package cn.sf.sculpture.project.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -14,24 +15,19 @@ public interface ProjectService {
 
 
     /**
+     * @param project
+     */
+    void save(Project project);
+    
+    
+    /**
      * @param username
      * @return
      * @throws Exception 
      */
     void insert(ProjectDTO project) throws Exception;
 
-	ProjectDTO findNew() throws Exception;
-
-	void deleted(Long projectId);
-
-	Page<ProjectSummary> findAll(Pageable pageable);
-
-	Project findOne(Long projectId);
-
-    /**
-     * @return
-     */
-    List<ProjectSummary> findAll();
+    void deleted(Long projectId);
 
     /**
      * @param projectId
@@ -39,11 +35,33 @@ public interface ProjectService {
      * @throws Exception 
      */
     ProjectDTO getOne(Long projectId) throws Exception;
+    
+    
+	Project findOne(Long projectId);
+
+	ProjectDTO findNew() throws Exception;
 
     /**
-     * @param project
+     * @param year
+     * @return
      */
-    void save(Project project);
+    List<ProjectSummary> findAll(String year);
+
+
+    /**
+     * @param year
+     * @return
+     */
+    BigDecimal totalWages(String year);
+    
+	Page<ProjectSummary> findAll(Pageable pageable);
+
+
+    /**
+     * @return
+     */
+    List<ProjectSummary> findAll();
+
 
     /**
      * @param principalId
@@ -58,6 +76,5 @@ public interface ProjectService {
      */
     Integer countByUser(User user);
 
- 
 	
 }

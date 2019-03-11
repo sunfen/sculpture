@@ -57,6 +57,17 @@ public class LogRecordController {
         
         return logRecordService.findBetween(year, month);
     }
+    
+    
+    @GetMapping("search/{projectId}/{year}/{month}")
+    @ResponseBody
+    public List<LogRecordDTO> search(
+        @PathVariable Long projectId,
+        @PathVariable Integer year,
+        @PathVariable Integer month) throws Exception{
+        
+        return logRecordService.findBetween(projectId, year, month);
+    }
 
 	
 	@PostMapping

@@ -47,6 +47,15 @@ public interface LogRecordService {
      */
     List<LogRecordDTO> findBetween(Integer year, Integer month) throws Exception;
 
+
+    /**
+     * @param projectId
+     * @param year
+     * @param month
+     * @return
+     */
+    List<LogRecordDTO> findBetween(Long projectId, Integer year, Integer month);
+
  
 	
 }

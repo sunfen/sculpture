@@ -120,7 +120,7 @@ public class WagesRecordServiceImpl implements WagesRecordService {
      */
     @Override
     public BigDecimal countByUser(User user) {
-        return repository.countWagesByProjectUser(user);
+        return repository.countWagesByProjectUser(user.getId());
     }
 
 
