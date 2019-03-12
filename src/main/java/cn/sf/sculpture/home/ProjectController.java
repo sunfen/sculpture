@@ -106,6 +106,27 @@ public class ProjectController {
 		return HttpState.success("新增成功！");
 	}
 	
+	/**
+     * 导入
+     * @param project
+     * @return
+     */
+    @PostMapping("import")
+    @ResponseBody
+    public HttpState<String> importer(@RequestBody ProjectDTO project){
+        
+        try {
+            projectService.importer(project, project.getLogRecords());
+    
+        } catch (Exception e) {
+            
+            e.printStackTrace();
+            return HttpState.error(e.getMessage());
+        }
+        
+        return HttpState.success("新增成功！");
+    }
+	
 	
 	/**
 	 * 删除

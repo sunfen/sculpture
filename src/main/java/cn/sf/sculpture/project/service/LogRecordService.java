@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import cn.sf.sculpture.common.domain.IndexDTO;
 import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.entity.LogRecord;
+import cn.sf.sculpture.project.domain.entity.Project;
+import cn.sf.sculpture.user.domain.entity.User;
 
 public interface LogRecordService {
 
@@ -20,8 +22,13 @@ public interface LogRecordService {
      */
     void insert(LogRecordDTO logRecord) throws Exception;
 
-
-	void deleted(Long logRecordId);
+    /**
+     * @param logRecords
+     * @param project
+     * @param user
+     * @return 
+     */
+    List<LogRecord> inserts(List<LogRecordDTO> logRecords, Project project, User user);
 
 	
 	Page<LogRecordDTO> findRecentMonth(Pageable pageable) throws Exception;
@@ -56,6 +63,7 @@ public interface LogRecordService {
      */
     List<LogRecordDTO> findBetween(Long projectId, Integer year, Integer month);
 
- 
+
+
 	
 }

@@ -34,15 +34,34 @@ public class WagesRecordServiceImpl implements WagesRecordService {
 	private WagesRecordConvert wagesRecordConvert;
 	@Autowired
 	private ProjectService projectService;
-    
 	@Autowired
     private WagesRecordRepository repository;
     
-  
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.WagesRecordService#insert(cn.sf.sculpture.project.domain.entity.Project, java.math.BigDecimal)
+     */
+    @Override
+    @Transactional
+    public void insert(Project project, BigDecimal actualTotalWages, String method) {
+        Assert.notNull(project, "project is null");
+        
+        WagesRecord entity = new WagesRecord();
+        entity.setProject(project);
+        entity.setCreateTime(CommonUtil.getNow());
+      
+        entity.setWages(actualTotalWages);
+        entity.setTime(CommonUtil.getDateNow());
+        entity.setMethod(MethodEnum.getValue(method));
+        
+        repository.save(entity);
+    }
+
 
 	@Override
     @Transactional
-	public void insert(WagesRecordDTO wagesRecord) throws Exception {
+	public void insert(WagesRecordDTO wagesRecord) {
 		Assert.notNull(wagesRecord, "wagesRecord is null");
 		
 		final Project project = projectService.findOne(wagesRecord.getProjectId());
@@ -122,6 +141,7 @@ public class WagesRecordServiceImpl implements WagesRecordService {
     public BigDecimal countByUser(User user) {
         return repository.countWagesByProjectUser(user.getId());
     }
+
 
 
 }

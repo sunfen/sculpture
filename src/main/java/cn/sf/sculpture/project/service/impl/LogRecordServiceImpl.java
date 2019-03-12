@@ -44,57 +44,191 @@ public class LogRecordServiceImpl implements LogRecordService {
     @Autowired
     private LogRecordRepository repository;
     
-  
 
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.LogRecordService#inserts(java.util.List, cn.sf.sculpture.project.domain.entity.Project, cn.sf.sculpture.user.domain.entity.User)
+     */
+    @Override
+    @Transactional
+    public List<LogRecord> inserts(final List<LogRecordDTO> logRecords, final Project project, final User user) {
+        Assert.notNull(project, "project is null");
+        Assert.notNull(user, "user is null");
+        Assert.notNull(logRecords, "logRecords is null");
+        
+        List<LogRecord> entities = new ArrayList<>();
+        
+        for(final LogRecordDTO record : logRecords) {
+            
+            final LocalDate date = CommonUtil.parserDate(record.getTime());
+            
+            LogRecord entity = repository.findByUserAndTime(user, CommonUtil.formatter(date));
+            
+            if(entity == null) {
+                entity =  new LogRecord();
+                entity.setUser(user);
+                entity.setTime(CommonUtil.formatter(date));
+                entity.setMorningProject(project);
+                entity.setAfternoonProject(project);
+                entity.setEveningProject(project);
+                entity.setMorningHour(record.getMorningHour());
+                entity.setAfternoonHour(record.getAfternoonHour());
+                entity.setEveningHour(record.getEveningHour());
+                projectService.addTotalHours(project, entity.getMorningHour() + entity.getAfternoonHour() + entity.getEveningHour());
+            }else {
+                
+                final Project morningProject = entity.getMorningProject();
+                final Project afternoonProject = entity.getAfternoonProject();
+                final Project eveningProject = entity.getEveningProject();
+                if(morningProject == null) {
+                    entity.setMorningProject(project);
+                    entity.setMorningHour(record.getMorningHour());
+                    projectService.addTotalHours(project, entity.getMorningHour());
+                }
+                if(afternoonProject == null) {
+                    entity.setAfternoonProject(project);
+                    entity.setAfternoonHour(record.getAfternoonHour());
+                    projectService.addTotalHours(project, entity.getAfternoonHour());
+                }
+                if(eveningProject == null) {
+                    entity.setEveningProject(project);
+                    entity.setEveningHour(record.getEveningHour());
+                    projectService.addTotalHours(project, entity.getEveningHour());
+                }
+                
+            }
+            
+            entity.setRemark(record.getRemark());
+            
+            entity.setTotalHour(entity.getMorningHour() + entity.getAfternoonHour() + entity.getEveningHour());
+            entities.add(entity);
+        }
+        
+        return repository.saveAll(entities);
+    }
+
+
+    
 	@Override
     @Transactional
 	public void insert(LogRecordDTO logRecord) throws Exception {
 		Assert.notNull(logRecord, "logRecord is null");
 		
-		
-		final Project morningProject = projectService.findOne(logRecord.getMorningProjectId());
-		
-		final Project afternoonProject = projectService.findOne(logRecord.getAfternoonProjectId());
-		
-		final Project eveningProject = projectService.findOne(logRecord.getEveningProjectId());
-	
 		final User user = userService.findCurrentUser();
-
 		final LocalDate date = CommonUtil.parserDate(logRecord.getTime());
         
         LogRecord entity = repository.findByUserAndTime(user, CommonUtil.formatter(date));
 
         if(entity == null) {
-            entity =  new LogRecord();
-            entity.setUser(user);
-            entity.setTime(CommonUtil.formatter(date));
+            this.create(logRecord, entity, date, user);
+        }else {
+            this.update(logRecord, entity);
         }
-        
-        entity.setMorningProject(morningProject);
-        entity.setAfternoonProject(afternoonProject);
-        entity.setEveningProject(eveningProject);
-        entity.setRemark(logRecord.getRemark());
-        
-        entity.setAfternoonHour(logRecord.getAfternoonHour());
-        entity.setEveningHour(logRecord.getEveningHour());
-        entity.setMorningHour(logRecord.getMorningHour());
-
-        entity.setTotalHour(logRecord.getTotalHour());
         
         repository.save(entity);
 	}
 	
 	
-
-	@Override
-	@Transactional
-	public void deleted(Long logRecordId) {
-		Assert.notNull(logRecordId, "logRecordId is null");
-		LogRecord entity = repository.getOne(logRecordId);
-		if(entity != null) {
-			repository.delete(entity);
-		}
+	private void update(LogRecordDTO logRecord,  LogRecord entity) {
+	    final Project oldMorning = entity.getMorningProject();
+	    if(oldMorning != null) {
+	        projectService.subTotalHours(oldMorning, entity.getMorningHour());
+	    }
+       
+	    final Project oldAfternoon = entity.getAfternoonProject();
+	    if(oldAfternoon != null) {
+            projectService.subTotalHours(oldAfternoon, entity.getAfternoonHour());
+        }
+	       
+	    final Project oldEvening = entity.getEveningProject();
+        if(oldEvening != null) {
+            projectService.subTotalHours(oldEvening, entity.getEveningHour());
+        }
+	    
+        if(logRecord.getMorningProjectId() != null) {
+            
+            final Project morningProject = projectService.findOne(logRecord.getMorningProjectId());
+            entity.setMorningProject(morningProject);
+            entity.setMorningHour(logRecord.getMorningHour());
+            projectService.addTotalHours(morningProject, logRecord.getMorningHour());
+        }else {
+            entity.setMorningProject(null);
+            entity.setMorningHour(0.0);
+        }
+        if(logRecord.getAfternoonProjectId() != null) {
+            
+            final Project afternoonProject = projectService.findOne(logRecord.getAfternoonProjectId());
+            entity.setAfternoonProject(afternoonProject);
+            entity.setAfternoonHour(logRecord.getAfternoonHour());
+        
+            projectService.addTotalHours(afternoonProject, logRecord.getAfternoonHour());
+        }else{
+            entity.setAfternoonProject(null);
+            entity.setAfternoonHour(0.0); 
+        }
+        if(logRecord.getEveningProjectId() != null) {
+            
+            final Project eveningProject = projectService.findOne(logRecord.getEveningProjectId());
+            entity.setEveningProject(eveningProject);
+            entity.setEveningHour(logRecord.getEveningHour());
+            projectService.addTotalHours(eveningProject, logRecord.getEveningHour());
+        }else{
+            entity.setEveningProject(null);
+            entity.setEveningHour(0.0);
+        }
+        
+        entity.setRemark(logRecord.getRemark());
+        entity.setTotalHour(entity.getMorningHour() + entity.getAfternoonHour() + entity.getEveningHour());
+        
+        repository.save(entity);
 	}
+	
+	
+   
+	private void create(final LogRecordDTO logRecord, LogRecord entity, final LocalDate date, final User user) {
+        
+	    entity =  new LogRecord();
+        
+        entity.setUser(user);
+        entity.setTime(CommonUtil.formatter(date));
+        
+        if(logRecord.getMorningProjectId() != null) {
+            
+            final Project morningProject = projectService.findOne(logRecord.getMorningProjectId());
+            entity.setMorningProject(morningProject);
+            entity.setMorningHour(logRecord.getMorningHour());
+            projectService.addTotalHours(morningProject, logRecord.getMorningHour());
+        }else {
+            entity.setMorningHour(0.0);
+        }
+        
+        if(logRecord.getAfternoonProjectId() != null) {
+            
+            final Project afternoonProject = projectService.findOne(logRecord.getAfternoonProjectId());
+            entity.setAfternoonProject(afternoonProject);
+            entity.setAfternoonHour(logRecord.getAfternoonHour());
+            projectService.addTotalHours(afternoonProject, logRecord.getAfternoonHour());
+        }else{
+            entity.setAfternoonHour(0.0); 
+        }
+        
+        if(logRecord.getEveningProjectId() != null) {
+            
+            final Project eveningProject = projectService.findOne(logRecord.getEveningProjectId());
+            entity.setEveningProject(eveningProject);
+            entity.setEveningHour(logRecord.getEveningHour());
+            projectService.addTotalHours(eveningProject, logRecord.getEveningHour());
+            
+        }else{
+            entity.setEveningHour(0.0);
+        }
+        
+        entity.setRemark(logRecord.getRemark());
+        entity.setTotalHour(entity.getMorningHour() + entity.getAfternoonHour() + entity.getEveningHour());
+        
+        repository.save(entity);
+    }
 
 	
 	
@@ -183,11 +317,6 @@ public class LogRecordServiceImpl implements LogRecordService {
         BigDecimal totalWages = new BigDecimal(0);
         
         for(final LogRecord result : results) {
-        
-            final BigDecimal morningDailyWages = result.getMorningProject().getDailyWages();
-            final BigDecimal afternoonDailyWages = result.getAfternoonProject().getDailyWages();
-            final BigDecimal eveningDailyWages = result.getEveningProject().getDailyWages();
-           
             Double morningHour = result.getMorningHour();
             Double afternoonHour = result.getAfternoonHour();
             Double eveningHour = result.getEveningHour();
@@ -195,16 +324,27 @@ public class LogRecordServiceImpl implements LogRecordService {
             totalHours = totalHours.add(new BigDecimal(morningHour + afternoonHour));
             totalExtraHours = totalExtraHours.add(new BigDecimal(eveningHour));
             totalLeaveHours = totalLeaveHours.add(new BigDecimal(8 - (morningHour + afternoonHour)));
-           
-            //每小时平均工资
             
-            BigDecimal avaMorning = morningDailyWages.divide(new BigDecimal(8));
-            BigDecimal avaAfternoon = afternoonDailyWages.divide(new BigDecimal(8));
-            BigDecimal avaEvening = eveningDailyWages.divide(new BigDecimal(8));
+            if(result.getMorningProject() != null) {
+                final BigDecimal morningDailyWages = result.getMorningProject().getDailyWages();
+                //每小时平均工资
+                BigDecimal avaMorning = morningDailyWages.divide(new BigDecimal(8));
+                totalWages = totalWages.add(avaMorning.multiply(new BigDecimal(morningHour ), MathContext.DECIMAL32));
+                
+            }
+            if(result.getAfternoonProject() != null) {
+                final BigDecimal afternoonDailyWages = result.getAfternoonProject().getDailyWages();
+                BigDecimal avaAfternoon = afternoonDailyWages.divide(new BigDecimal(8));
+                totalWages = totalWages.add(avaAfternoon.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
+                
+            }
+            if(result.getEveningProject() != null) {
+                final BigDecimal eveningDailyWages = result.getEveningProject().getDailyWages();
+                BigDecimal avaEvening = eveningDailyWages.divide(new BigDecimal(8));
+                totalWages = totalWages.add(avaEvening.multiply(new BigDecimal(eveningHour), MathContext.DECIMAL32));
+                
+            }
 
-            totalWages = totalWages.add(avaMorning.multiply(new BigDecimal(morningHour ), MathContext.DECIMAL32));
-            totalWages = totalWages.add(avaAfternoon.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
-            totalWages = totalWages.add(avaEvening.multiply(new BigDecimal(eveningHour), MathContext.DECIMAL32));
         }
         
         dto.setWorkDays(CommonUtil.convertHours(totalHours.doubleValue()));
@@ -264,9 +404,20 @@ public class LogRecordServiceImpl implements LogRecordService {
             contents.add(summary);
             summary.setId(log.getId());
             
-            summary.setMorningProjectId(log.getMorningProject().getId());
-            summary.setAfternoonProjectId(log.getAfternoonProject().getId());
-            summary.setEveningProjectId(log.getEveningProject().getId());
+            if(log.getMorningProject() != null) {
+                
+                summary.setMorningProjectId(log.getMorningProject().getId());
+            }
+            
+            if(log.getAfternoonProject() != null) {
+                
+                summary.setAfternoonProjectId(log.getAfternoonProject().getId());
+            }
+
+            if(log.getEveningProject() != null) {
+                
+                summary.setEveningProjectId(log.getEveningProject().getId());
+            }
             
             summary.setTime(date.toString());
             summary.setRemark(log.getRemark());

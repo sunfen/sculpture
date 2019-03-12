@@ -13,13 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import cn.sf.sculpture.common.CommonUtil;
+import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.ProjectSummary;
 import cn.sf.sculpture.project.domain.entity.Principal;
 import cn.sf.sculpture.project.domain.entity.Project;
 import cn.sf.sculpture.project.repository.ProjectRepository;
+import cn.sf.sculpture.project.service.LogRecordService;
 import cn.sf.sculpture.project.service.PrincipalService;
 import cn.sf.sculpture.project.service.ProjectService;
+import cn.sf.sculpture.project.service.WagesRecordService;
 import cn.sf.sculpture.project.util.ProjectConvert;
 import cn.sf.sculpture.user.domain.entity.User;
 import cn.sf.sculpture.user.service.UserService;
@@ -34,14 +37,56 @@ import cn.sf.sculpture.user.service.UserService;
 public class ProjectServiceImpl implements ProjectService {
     
     @Autowired
+    private UserService userService;
+    @Autowired
+    private ProjectRepository repository;
+    @Autowired
     private ProjectConvert projectConvert;
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private LogRecordService logRecordService;
 	@Autowired
     private PrincipalService principalService;
     @Autowired
-    private ProjectRepository repository;
+    private WagesRecordService wagesRecordService;
     
+    
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#addTotalHours(cn.sf.sculpture.project.domain.entity.Project, java.lang.Double)
+     */
+    @Override
+    @Transactional
+    public void addTotalHours(Project project, Double changeHours) {
+        
+        Double totalWorkHour = project.getTotalWorkHour();
+        totalWorkHour = totalWorkHour == null ? 0.0 : totalWorkHour ;
+        totalWorkHour = totalWorkHour + changeHours;
+        project.setTotalWorkHour(totalWorkHour);
+        
+        BigDecimal dailyWages = project.getDailyWages().divide(new BigDecimal(8));
+        BigDecimal expectTotalWages = dailyWages.multiply(new BigDecimal(project.getTotalWorkHour()));
+        project.setExpectTotalWages(expectTotalWages);
+        repository.save(project);
+    }
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#subTotalHours(cn.sf.sculpture.project.domain.entity.Project, java.lang.Double)
+     */
+    @Override
+    @Transactional
+    public void subTotalHours(Project project, Double changeHours) {
+        Double totalWorkHour = project.getTotalWorkHour();
+        totalWorkHour = totalWorkHour == null ? 0.0 : totalWorkHour ;
+        totalWorkHour = totalWorkHour - changeHours;
+        project.setTotalWorkHour(totalWorkHour);
+     
+        BigDecimal dailyWages = project.getDailyWages().divide(new BigDecimal(8));
+        BigDecimal expectTotalWages = dailyWages.multiply(new BigDecimal(project.getTotalWorkHour()));
+        project.setExpectTotalWages(expectTotalWages);
+        repository.save(project);
+    }
+
     
 
     /* (non-Javadoc)
@@ -54,9 +99,44 @@ public class ProjectServiceImpl implements ProjectService {
     }
     
     
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#importer(cn.sf.sculpture.project.domain.ProjectDTO, java.util.List)
+     */
     @Override
     @Transactional
-    public void insert(final ProjectDTO project) throws Exception {
+    public void importer(ProjectDTO projectDTO, List<LogRecordDTO> logRecords) {
+        final User user = userService.findCurrentUser();
+        
+        Project entity = new Project();
+        entity.setUser(user);
+        entity.setCreateTime(CommonUtil.getNow());
+        
+        Principal principal = projectDTO.getPrincipal();
+  
+        if(principal.getId() == null) {
+            principal = principalService.insert(principal);
+        }
+ 
+        entity.setPrincipal(principal);
+        entity.setName(projectDTO.getName());
+        entity.setAddress(projectDTO.getAddress());
+        entity.setDailyWages(projectDTO.getDailyWages());
+        entity.setActualTotalWages(projectDTO.getActualTotalWages());
+        entity = repository.save(entity);
+        
+        if(projectDTO.getActualTotalWages() != null && !projectDTO.getActualTotalWages().equals(new BigDecimal(0))) {
+            
+            wagesRecordService.insert(entity, projectDTO.getActualTotalWages(), projectDTO.getMethod());
+        }
+         
+        logRecordService.inserts(logRecords, entity, user);
+        
+    }
+    
+    
+    @Override
+    @Transactional
+    public Project insert(final ProjectDTO project) {
         Assert.notNull(project, "project is null");
         
         final User user = userService.findCurrentUser();
@@ -84,8 +164,13 @@ public class ProjectServiceImpl implements ProjectService {
         entity.setName(project.getName());
         entity.setPrincipal(principal);
         entity.setDailyWages(project.getDailyWages());
-
-        repository.save(entity);
+        
+        double totalHour = entity.getTotalWorkHour() != null ? entity.getTotalWorkHour() : 0;
+        BigDecimal dailyWages = entity.getDailyWages().divide(new BigDecimal(8));
+        BigDecimal expectTotalWages = dailyWages.multiply(new BigDecimal(totalHour));
+        entity.setExpectTotalWages(expectTotalWages);
+       
+        return repository.save(entity);
                
     }
     
@@ -206,6 +291,6 @@ public class ProjectServiceImpl implements ProjectService {
 
 
 
-    
+
 
 }

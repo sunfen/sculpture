@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.ProjectSummary;
 import cn.sf.sculpture.project.domain.entity.Project;
@@ -19,13 +20,22 @@ public interface ProjectService {
      */
     void save(Project project);
     
+    /**
+     * @param project
+     */
+    void addTotalHours(Project project, Double changeHours);
+    
+    /**
+     * @param project
+     */
+    void subTotalHours(Project project, Double changeHours);
     
     /**
      * @param username
      * @return
      * @throws Exception 
      */
-    void insert(ProjectDTO project) throws Exception;
+    Project insert(ProjectDTO project);
 
     void deleted(Long projectId);
 
@@ -75,6 +85,13 @@ public interface ProjectService {
      * @return
      */
     Integer countByUser(User user);
+
+
+    /**
+     * @param project
+     * @param logRecords
+     */
+    void importer(ProjectDTO project, List<LogRecordDTO> logRecords);
 
 	
 }

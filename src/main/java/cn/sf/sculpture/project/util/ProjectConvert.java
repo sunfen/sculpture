@@ -164,23 +164,42 @@ public class ProjectConvert {
             final List<LogRecord> eveningLogRecords = project.getEveningLogRecords();
             if(!morningLogRecords.isEmpty()) {
                 summay.setStartTime(morningLogRecords.get(0).getTime());
+                summay.setEndTime(morningLogRecords.get(morningLogRecords.size()-1).getTime());
             } 
             
-            if(!afternoonLogRecords.isEmpty() && summay.getStartTime() != null) {
-                final String time = afternoonLogRecords.get(0).getTime();
-                final LocalDate startDate = CommonUtil.parserDate(time);
+            if(!afternoonLogRecords.isEmpty()) {
+                if(summay.getStartTime() != null) {
+                    final String time = afternoonLogRecords.get(0).getTime();
+                    final String endTime = afternoonLogRecords.get(afternoonLogRecords.size()-1).getTime();
+                    final LocalDate startDate = CommonUtil.parserDate(time);
+                    final LocalDate endDate = CommonUtil.parserDate(endTime);
 
-                if(startDate.isBefore(CommonUtil.parserDate(summay.getStartTime()))) {
-                    summay.setStartTime(time);
+                    if(startDate.isBefore(CommonUtil.parserDate(summay.getStartTime()))) {
+                        summay.setStartTime(time);
+                    }
+                    
+                    if(CommonUtil.parserDate(summay.getEndTime()).isBefore(endDate)) {
+                        summay.setEndTime(endTime);
+                    }
                 }
+                
             }
             
-            if(!eveningLogRecords.isEmpty() && summay.getStartTime() != null) {
-                final String time = eveningLogRecords.get(0).getTime();
-                final LocalDate startDate = CommonUtil.parserDate(time);
+            
+            if(!eveningLogRecords.isEmpty()) {
+                if(summay.getStartTime() != null) {
+                    final String time = eveningLogRecords.get(0).getTime();
+                    final String endTime = eveningLogRecords.get(eveningLogRecords.size()-1).getTime();
+                    final LocalDate startDate = CommonUtil.parserDate(time);
+                    final LocalDate endDate = CommonUtil.parserDate(endTime);
 
-                if(startDate.isBefore(CommonUtil.parserDate(summay.getStartTime()))) {
-                    summay.setStartTime(time);
+                    if(startDate.isBefore(CommonUtil.parserDate(summay.getStartTime()))) {
+                        summay.setStartTime(time);
+                    }
+                    
+                    if(CommonUtil.parserDate(summay.getEndTime()).isBefore(endDate)) {
+                        summay.setEndTime(endTime);
+                    }
                 }
             }
             

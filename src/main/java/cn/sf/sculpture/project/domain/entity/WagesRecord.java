@@ -50,7 +50,7 @@ public class WagesRecord  extends AbstractSecureObject {
 	/**
 	 * 备注
 	 */
-	@Column(length = 128, nullable = false)
+	@Column(length = 128)
 	private String remark;
 
 	/**

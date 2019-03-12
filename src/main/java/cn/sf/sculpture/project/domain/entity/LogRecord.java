@@ -26,21 +26,21 @@ public class LogRecord  extends AbstractSecureObject {
 	 * 上午项目
 	 */
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn
 	private Project morningProject;
 	
 	/**
      * 下午项目
      */
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Project afternoonProject;
     
     /**
      * 晚上项目
      */
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Project eveningProject;
 	
 	/**

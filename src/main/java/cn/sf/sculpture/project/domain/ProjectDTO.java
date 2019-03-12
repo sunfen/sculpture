@@ -1,6 +1,7 @@
 package cn.sf.sculpture.project.domain;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import cn.sf.sculpture.project.domain.entity.Principal;
 
@@ -48,6 +49,10 @@ public class ProjectDTO {
      */
     private BigDecimal actualTotalWages = new BigDecimal(0);
 	
+    private String method;
+    
+    private List<LogRecordDTO> logRecords;
+    
 	public Long getId() {
 		return id;
 	}
@@ -121,5 +126,21 @@ public class ProjectDTO {
         this.actualTotalWages = actualTotalWages;
     }
 
-	
+    
+    public List<LogRecordDTO> getLogRecords() {
+        return logRecords;
+    }
+
+    public void setLogRecords(List<LogRecordDTO> logRecords) {
+        this.logRecords = logRecords;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
 }

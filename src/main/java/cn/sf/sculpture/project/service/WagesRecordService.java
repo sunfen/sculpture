@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import cn.sf.sculpture.project.domain.WagesRecordDTO;
+import cn.sf.sculpture.project.domain.entity.Project;
 import cn.sf.sculpture.user.domain.entity.User;
 
 public interface WagesRecordService {
@@ -14,8 +15,14 @@ public interface WagesRecordService {
      * @return
      * @throws Exception 
      */
-    void insert(WagesRecordDTO wagesRecord) throws Exception;
+    void insert(WagesRecordDTO wagesRecord);
 
+    /**
+     * @param entity
+     * @param actualTotalWages
+     */
+    void insert(Project entity, BigDecimal actualTotalWages, String method);
+    
     /**
      * 删除
      * @param logRecordId
@@ -34,5 +41,6 @@ public interface WagesRecordService {
      * @return
      */
     BigDecimal countByUser(User user);
+
 
 }

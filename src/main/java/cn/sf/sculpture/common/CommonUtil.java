@@ -22,7 +22,13 @@ public class CommonUtil {
 		LocalDateTime now = LocalDateTime.now();
 		return now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
-
+    
+    public static String getDateNow() {
+        LocalDate now = LocalDate.now();
+        return now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+    
+    
 	public static LocalDateTime parserTime(String time) {
 	    return LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
