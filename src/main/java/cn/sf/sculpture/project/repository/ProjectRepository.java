@@ -41,7 +41,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
      * @param year
      * @return
      */
-    @Query(value = "select * from project p "
+    @Query(value = "select distinct p.* from project p "
         + "     left join log_record l on p.id = l.afternoon_project_id "
         + "     or p.id = l.evening_project_id or p.id = l.morning_project_id "
         + "     where p.user_id = :userId and date_format(l.time, '%Y') = :year  ; ", nativeQuery = true)
@@ -52,7 +52,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
      * @param year
      * @return
      */
-    @Query(value = "select SUM(p.actual_total_wages) from project p "
+    @Query(value = "select SUM(distinct p.actual_total_wages) from project p "
         + "     left join log_record l on p.id = l.afternoon_project_id "
         + "     or p.id = l.evening_project_id or p.id = l.morning_project_id "
         + "     where p.user_id = :userId and date_format(l.time, '%Y') = :year  ; ", nativeQuery = true)

@@ -125,8 +125,6 @@ public class LogRecordServiceImpl implements LogRecordService {
         }else {
             this.update(logRecord, entity);
         }
-        
-        repository.save(entity);
 	}
 	
 	
