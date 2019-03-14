@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import cn.sf.sculpture.project.domain.DTO;
 import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.ProjectSummary;
@@ -70,7 +71,7 @@ public interface ProjectService {
     /**
      * @return
      */
-    List<ProjectSummary> findAll();
+    List<DTO> findAll();
 
 
     /**

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.sf.sculpture.common.domain.HttpState;
+import cn.sf.sculpture.project.domain.DTO;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.ProjectSummary;
@@ -75,12 +76,14 @@ public class ProjectController {
     }
     
 	
-    @GetMapping("search/list")
+    @GetMapping("search/simple")
     @ResponseBody
-    public List<ProjectSummary> allProjects() {
+    public List<DTO> allProjects() {
         
         return projectService.findAll();
     }
+    
+ 
     
 
 

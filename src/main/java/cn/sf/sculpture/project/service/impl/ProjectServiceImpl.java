@@ -2,6 +2,7 @@ package cn.sf.sculpture.project.service.impl;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import cn.sf.sculpture.common.CommonUtil;
+import cn.sf.sculpture.project.domain.DTO;
 import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.ProjectSummary;
@@ -223,11 +225,23 @@ public class ProjectServiceImpl implements ProjectService {
      * @see cn.sf.sculpture.project.service.ProjectService#findAll()
      */
     @Override
-    public List<ProjectSummary> findAll() {
+    public List<DTO> findAll() {
 
         final List<Project> results = repository.findByUserOrderByCreateTimeDesc(userService.findCurrentUser());
         
-        return projectConvert.convertSummary(results);
+        List<DTO> contents = new ArrayList<>();
+        
+        for(final Project project : results) {
+            
+            DTO summay = new DTO();
+            
+            summay.setId(project.getId());
+            summay.setName(project.getPrincipal().getName() + " - " + project.getName());
+
+            contents.add(summay);
+        }
+        
+        return contents;
     }
     
 
