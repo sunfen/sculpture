@@ -45,6 +45,10 @@ public class UserServiceImpl implements UserService {
         //insert user
         if(user == null) {
            user = this.insertByWechat(userDTO);
+        }else if(userDTO.getUsername() != null) {
+            user.setAvatarUrl(userDTO.getAvatarUrl());
+            user.setUsername(userDTO.getUsername());
+            user = repository.save(user);
         }
 
        return user;

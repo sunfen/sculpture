@@ -1,6 +1,6 @@
  package cn.sf.sculpture.home;
 
-import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.shiro.SecurityUtils;
@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 
 import cn.sf.sculpture.common.domain.HttpState;
 import cn.sf.sculpture.user.domain.UserDTO;
+import cn.sf.sculpture.user.domain.entity.User;
 import cn.sf.sculpture.user.service.UserService;
 
 /**
@@ -43,7 +44,7 @@ public class LoginController {
 
     
     @GetMapping("session/{code}")
-    public HttpState<Serializable> getAccessToken(@PathVariable String code) throws Exception {
+    public HttpState<Map<String, Object>> getAccessToken(@PathVariable String code) throws Exception {
     
         String accessTokenResult = 
             restTemplate.getForObject(String.format("https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code&js_code=%s&appid=%s&secret=%s", code, APPID, SECRET), String.class);
@@ -71,25 +72,29 @@ public class LoginController {
      */
     @PostMapping
     @ResponseBody
-    public HttpState<Serializable> loginWechat(@RequestBody UserDTO user) {
+    public HttpState<Map<String, Object>> loginWechat(@RequestBody UserDTO user) {
         
-        return this.loginWechat(user);
+        return this.login(user);
     }
     
     
     
-    private HttpState<Serializable> login(UserDTO user){
-        userService.insert(user);
+    private HttpState<Map<String, Object>> login(UserDTO user){
+        final User entity = userService.insert(user);
 
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
         // 在认证提交前准备 token（令牌）
-        UsernamePasswordToken token = new UsernamePasswordToken(user.getOpenid(), user.getOpenid());
+        UsernamePasswordToken token = new UsernamePasswordToken(entity.getOpenid(), entity.getOpenid());
     
         // 执行认证登陆
         subject.login(token);
-        
-        return HttpState.success(subject.getSession().getId());
+        Map<String, Object> map = new HashMap<>();
+        map.put("session", subject.getSession().getId());
+        map.put("openid", entity.getOpenid());
+        map.put("avatarUrl", entity.getAvatarUrl());
+        map.put("name", entity.getUsername());
+        return HttpState.success(map);
     }
     
 
