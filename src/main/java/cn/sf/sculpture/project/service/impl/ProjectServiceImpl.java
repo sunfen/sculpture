@@ -288,8 +288,6 @@ public class ProjectServiceImpl implements ProjectService {
     	final Page<Project> results = 
     	    repository.findByUserOrderByCreateTimeDesc(userService.findCurrentUser(), pageable);
     	
-
-    	
     	return new PageImpl<>(projectConvert.convertSummaries(results.getContent()), pageable, results.getTotalElements());
     }
 

@@ -173,7 +173,6 @@ public class ProjectConvert {
             summay.setActualTotalWages(project.getActualTotalWages());
             
             
-            
             final BigDecimal dailyWages = project.getDailyWages();
             // 每小时平均工资
             final BigDecimal ava = dailyWages.divide(new BigDecimal(8));
@@ -230,35 +229,35 @@ public class ProjectConvert {
             for(final LogRecord result : morningLogRecords) {
             
                 Double morningHour = result.getMorningHour();
-                totalHours.add(new BigDecimal(morningHour));
-                totalLeaveHours.add(new BigDecimal(4 - morningHour));
+                totalHours = totalHours.add(new BigDecimal(morningHour));
+                totalLeaveHours = totalLeaveHours.add(new BigDecimal(4 - morningHour));
 
-                totalWages.add(ava.multiply(new BigDecimal(morningHour), MathContext.DECIMAL32));
+                totalWages = totalWages.add(ava.multiply(new BigDecimal(morningHour), MathContext.DECIMAL32));
             }
             
             for(final LogRecord result : afternoonLogRecords) {
                 
                 final Double afternoonHour = result.getAfternoonHour();
-                totalHours.add(new BigDecimal(afternoonHour));
-                totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
+                totalHours = totalHours.add(new BigDecimal(afternoonHour));
+                totalLeaveHours = totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
 
-                totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
+                totalWages = totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
             }
             
             for(final LogRecord result : afternoonLogRecords) {
                 
                 final Double afternoonHour = result.getAfternoonHour();
-                totalHours.add(new BigDecimal(afternoonHour));
-                totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
+                totalHours = totalHours.add(new BigDecimal(afternoonHour));
+                totalLeaveHours = totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
 
-                totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
+                totalWages = totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
             }
             
             for(final LogRecord result : eveningLogRecords) {
                 
                 final Double eveningHour = result.getEveningHour();
-                totalExtraHours.add(new BigDecimal(eveningHour));
-                totalWages.add(ava.multiply(new BigDecimal(eveningHour), MathContext.DECIMAL32));
+                totalExtraHours = totalExtraHours.add(new BigDecimal(eveningHour));
+                totalWages = totalWages.add(ava.multiply(new BigDecimal(eveningHour), MathContext.DECIMAL32));
             }
                             
             summay.setWorks(CommonUtil.convertHours(totalHours.doubleValue()));
