@@ -47,7 +47,6 @@ public class LogRecordController {
     }
     
     
-    
    
     @GetMapping("search/{year}/{month}")
     @ResponseBody

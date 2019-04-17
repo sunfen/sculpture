@@ -2,9 +2,6 @@ package cn.sf.sculpture.common.domain;
 
 import java.math.BigDecimal;
 
-import org.springframework.data.domain.Page;
-
-import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 
 public class IndexDTO {
@@ -36,12 +33,6 @@ public class IndexDTO {
      */
     private String leaveDays;
 	
-    
-	/**
-	 * 日记
-	 */
-	private Page<LogRecordDTO> pageInfo;
-
     public ProjectDTO getProject() {
         return project;
     }
@@ -66,13 +57,6 @@ public class IndexDTO {
         this.workDays = workDays;
     }
 
-    public Page<LogRecordDTO> getPageInfo() {
-        return pageInfo;
-    }
-
-    public void setPageInfo(Page<LogRecordDTO> pageInfo) {
-        this.pageInfo = pageInfo;
-    }
 
     public String getExtraDays() {
         return extraDays;

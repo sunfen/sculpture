@@ -65,5 +65,6 @@ public interface LogRecordService {
 
 
 
+
 	
 }

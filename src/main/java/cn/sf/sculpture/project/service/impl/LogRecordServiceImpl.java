@@ -375,6 +375,9 @@ public class LogRecordServiceImpl implements LogRecordService {
     }
 
 
+
+    
+
     /* (non-Javadoc)
      * @see cn.sf.sculpture.project.service.LogRecordService#findBetween(java.lang.Long, java.lang.Integer, java.lang.Integer)
      */
@@ -432,6 +435,8 @@ public class LogRecordServiceImpl implements LogRecordService {
         }
         return contents;
     }
+
+
 
 
 
