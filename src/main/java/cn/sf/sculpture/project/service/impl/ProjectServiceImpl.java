@@ -302,6 +302,16 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
 
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#getSummary(java.lang.Long)
+     */
+    @Override
+    public ProjectSummary getSummary(Long projectId) throws Exception {
+        // TODO Auto-generated method stub
+         return projectConvert.convertSummary(repository.getOne(projectId));
+    }
+
+
 
 
 

@@ -167,6 +167,19 @@ public class ProjectController {
     }
     
     
+    /**
+     * 获取一个
+     * @param projectId
+     * @return
+     * @throws Exception 
+     */
+    @GetMapping("summary/{projectId}")
+    @ResponseBody
+    public ProjectSummary getSummary(@PathVariable Long projectId) throws Exception{
+         
+        
+        return projectService.getSummary(projectId);
+    }
 	
 	@GetMapping
 	@ResponseBody

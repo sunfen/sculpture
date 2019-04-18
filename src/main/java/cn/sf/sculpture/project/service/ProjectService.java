@@ -46,6 +46,8 @@ public interface ProjectService {
      * @throws Exception 
      */
     ProjectDTO getOne(Long projectId) throws Exception;
+
+    ProjectSummary getSummary(Long projectId) throws Exception;
     
     
 	Project findOne(Long projectId);
