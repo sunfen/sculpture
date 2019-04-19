@@ -243,14 +243,6 @@ public class ProjectConvert {
             totalWages = totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
         }
         
-        for(final LogRecord result : afternoonLogRecords) {
-            
-            final Double afternoonHour = result.getAfternoonHour();
-            totalHours = totalHours.add(new BigDecimal(afternoonHour));
-            totalLeaveHours = totalLeaveHours.add(new BigDecimal(4 - afternoonHour));
-
-            totalWages = totalWages.add(ava.multiply(new BigDecimal(afternoonHour), MathContext.DECIMAL32));
-        }
         
         for(final LogRecord result : eveningLogRecords) {
             
