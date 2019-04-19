@@ -2,10 +2,13 @@ package cn.sf.sculpture.project.repository;
 
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import cn.sf.sculpture.project.domain.entity.LogRecord;
 import cn.sf.sculpture.user.domain.entity.User;
@@ -36,5 +39,12 @@ public interface LogRecordRepository extends JpaRepository<LogRecord, Long>{
      */
 	LogRecord findByUserAndTime(User user, String time);
 
+    /**
+     * @return
+     */
+    @Query(value = "select SUM(l.id) as count, u.openid as openid from user u " + 
+        "    left join  log_record l on u.id = l.user_id and date_format(l.time, '%Y') = :year " + 
+        "    group by u.id; ", nativeQuery = true)
+    List<Map<String, Object>> countByYear(@Param("year") int year);
 	
 }

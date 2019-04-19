@@ -438,6 +438,18 @@ public class LogRecordServiceImpl implements LogRecordService {
 
 
 
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.LogRecordService#count(int)
+     */
+    @Override
+    public List<Map<String, Object>> count(int year) {
+       
+         
+        return repository.countByYear(year);
+    }
+
+
+
 
 
  

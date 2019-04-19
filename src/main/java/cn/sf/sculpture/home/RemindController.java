@@ -3,11 +3,12 @@ package cn.sf.sculpture.home;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,7 @@ import cn.sf.sculpture.common.MiniprogramResult;
 import cn.sf.sculpture.common.RemindMessage;
 import cn.sf.sculpture.common.RemindMessageData;
 import cn.sf.sculpture.common.TemplateMessage;
+import cn.sf.sculpture.project.service.LogRecordService;
 import cn.sf.sculpture.user.domain.entity.User;
 import cn.sf.sculpture.user.service.UserService;
 
@@ -46,6 +48,10 @@ public class RemindController {
     private RestTemplate restTemplate;
     @Autowired
     private UserService userService;
+    @Autowired
+    private LogRecordService logRecordService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
     
     /**
      * 消息
@@ -55,7 +61,7 @@ public class RemindController {
      * @param echostr
      * @return
      */
-    @Scheduled(cron = "0 1 0 * * ?" ) 
+    @Scheduled(cron = "0 0 20 * * ?" ) 
     public void getProcessRequest() throws Exception{
         String accessTokenResult = 
             restTemplate.getForObject(
@@ -95,9 +101,31 @@ public class RemindController {
             final List<User> users = userService.findAll();
             
             for(final User user : users) {
+                final Set<String> keys = redisTemplate.keys(user.getOpenid() + "*");
+                if(keys == null || keys.isEmpty()) {
+                    continue;
+                }
+                final String[] keysStr = (String[])keys.toArray();
+                if(keysStr == null || keysStr.length == 0) {
+                    continue;
+                }
+                final String formIdKey = keysStr[0];
+                final String formId = (String)redisTemplate.opsForValue().get(formIdKey);
+                if(formId == null || formId.isEmpty()) {
+                    return;
+                }
+                redisTemplate.delete(formIdKey);
+                final List<Map<String, Object>> counts = logRecordService.count(year);
+                Long numbers = 0L;
+                for(final Map<String, Object> count : counts) {
+                    final String openid = (String)count.get("openid");
+                    if(openid != null && openid.equals(user.getOpenid())) {
+                        numbers = count.get("count") == null ? 0L : (Long)count.get("count");
+                    }
+                }
                 
-                final RemindMessageData data = new RemindMessageData(now, year, 2L);
-                final TemplateMessage msg = new TemplateMessage(APPID, data);
+                final RemindMessageData data = new RemindMessageData(now, year, numbers);
+                final TemplateMessage msg = new TemplateMessage(formId, data);
                 final RemindMessage remindMsg = new RemindMessage(access_token, user.getOpenid(), msg);
                 final String json = gson.toJson(remindMsg);
               

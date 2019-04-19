@@ -2,6 +2,7 @@ package cn.sf.sculpture.project.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,8 +64,10 @@ public interface LogRecordService {
      */
     List<LogRecordDTO> findBetween(Long projectId, Integer year, Integer month);
 
+    /**
+     * @param year
+     * @return
+     */
+    List<Map<String, Object>> count(int year);
 
-
-
-	
 }
