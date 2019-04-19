@@ -1,6 +1,8 @@
 package cn.sf.sculpture.user.service.impl;
 
 
+import java.util.List;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,5 +119,15 @@ public class UserServiceImpl implements UserService {
          
          
          return count;
+    }
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.user.service.UserService#findAll()
+     */
+    @Override
+    public List<User> findAll() {
+        
+         return repository.findAll();
     }
 }

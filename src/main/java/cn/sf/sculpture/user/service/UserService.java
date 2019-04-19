@@ -1,5 +1,7 @@
 package cn.sf.sculpture.user.service;
 
+import java.util.List;
+
 import cn.sf.sculpture.project.domain.CountDTO;
 import cn.sf.sculpture.user.domain.UserDTO;
 import cn.sf.sculpture.user.domain.entity.User;
@@ -28,5 +30,11 @@ public interface UserService {
      * @return
      */
     CountDTO count();
+
+
+    /**
+     * 
+     */
+    List<User> findAll();
  
 }
