@@ -42,7 +42,7 @@ public interface LogRecordRepository extends JpaRepository<LogRecord, Long>{
     /**
      * @return
      */
-    @Query(value = "select SUM(l.id) as count, u.openid as openid from user u " + 
+    @Query(value = "select COUNT(l.id) as count, u.openid as openid from user u " + 
         "    left join  log_record l on u.id = l.user_id and date_format(l.time, '%Y') = :year " + 
         "    group by u.id; ", nativeQuery = true)
     List<Map<String, Object>> countByYear(@Param("year") int year);

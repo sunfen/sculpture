@@ -37,7 +37,7 @@ public class TemplateMessage {
         super();
         this.form_id = form_id;
         this.data = data;
-        this.template_id = "Z9ABOEJsCIygZaZ5co5QxGuhjCUNPET4wXafgK5IHqQ";
+        this.template_id = "Z9ABOEJsCIygZaZ5co5QxKADM4LHWg3dD6B0upt7dJ4";
         this.page = "pages/index/index";
         this.emphasis_keyword = "签到提醒";
     }

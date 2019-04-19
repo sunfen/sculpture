@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.sf.sculpture.common.Form;
 
@@ -18,12 +19,14 @@ import cn.sf.sculpture.common.Form;
  */
 @Controller
 @RequestMapping("/form")
+@ResponseBody
 public class FormController {
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
     
     @PostMapping
+    @ResponseBody
     public void fromId(@RequestBody Form form) throws Exception{
         
         if(form == null || form.getOpenId() == null || form.getFormId() == null) {

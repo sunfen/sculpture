@@ -1,6 +1,8 @@
 package cn.sf.sculpture.home;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,40 +103,50 @@ public class RemindController {
             final List<User> users = userService.findAll();
             
             for(final User user : users) {
+                if(user.getOpenid() == null || user.getOpenid().isEmpty()) {
+                    continue;
+                }
+             
                 final Set<String> keys = redisTemplate.keys(user.getOpenid() + "*");
                 if(keys == null || keys.isEmpty()) {
                     continue;
                 }
-                final String[] keysStr = (String[])keys.toArray();
-                if(keysStr == null || keysStr.length == 0) {
+                Iterator<String> iterator = keys.iterator();
+                String formIdKey = null;
+                if(iterator.hasNext()) {
+                    formIdKey =  iterator.next();
+                }else {
                     continue;
                 }
-                final String formIdKey = keysStr[0];
+                
                 final String formId = (String)redisTemplate.opsForValue().get(formIdKey);
                 if(formId == null || formId.isEmpty()) {
-                    return;
+                    continue;
                 }
                 redisTemplate.delete(formIdKey);
+                
                 final List<Map<String, Object>> counts = logRecordService.count(year);
-                Long numbers = 0L;
+                BigDecimal numbers = new BigDecimal(0);
                 for(final Map<String, Object> count : counts) {
                     final String openid = (String)count.get("openid");
                     if(openid != null && openid.equals(user.getOpenid())) {
-                        numbers = count.get("count") == null ? 0L : (Long)count.get("count");
+                        if(count.get("count") != null) {
+                            numbers = (BigDecimal)count.get("count");
+                        }
+                        break;
                     }
                 }
                 
                 final RemindMessageData data = new RemindMessageData(now, year, numbers);
                 final TemplateMessage msg = new TemplateMessage(formId, data);
                 final RemindMessage remindMsg = new RemindMessage(access_token, user.getOpenid(), msg);
-                final String json = gson.toJson(remindMsg);
               
-                HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
+                HttpEntity<String> requestEntity = new HttpEntity<String>(gson.toJson(remindMsg), headers);
 
                 // 进行网络请求,访问url接口
                 ResponseEntity<String> responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String.class);
                 logger.info("发送统一模板消息后接受数据:" + responseEntity);
-                
+                logger.info("user openid:" + user.getOpenid());
                 if (responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK) {
                     String sessionData = responseEntity.getBody();
                     
@@ -143,9 +155,9 @@ public class RemindController {
                     int errorCode = miniprogramResult.getErrcode();
                     String errorMessage = miniprogramResult.getErrmsg();
                     if (errorCode == 0) {
-                        logger.error("模板消息发送成功:" + errorCode + "," + errorMessage);
+                        logger.error("seng message success :" + errorCode + "," + errorMessage);
                     } else {
-                        logger.error("模板消息发送失败:" + errorCode + "," + errorMessage);
+                        logger.error("seng message fail :" + errorCode + "," + errorMessage);
                     }
                 }
             }
