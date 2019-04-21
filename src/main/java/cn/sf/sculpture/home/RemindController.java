@@ -1,6 +1,7 @@
 package cn.sf.sculpture.home;
 
-import java.math.BigDecimal;
+
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
@@ -126,12 +127,12 @@ public class RemindController {
                 redisTemplate.delete(formIdKey);
                 
                 final List<Map<String, Object>> counts = logRecordService.count(year);
-                BigDecimal numbers = new BigDecimal(0);
+                BigInteger numbers = new BigInteger("0");
                 for(final Map<String, Object> count : counts) {
                     final String openid = (String)count.get("openid");
                     if(openid != null && openid.equals(user.getOpenid())) {
                         if(count.get("count") != null) {
-                            numbers = (BigDecimal)count.get("count");
+                            numbers = (BigInteger)count.get("count");
                         }
                         break;
                     }

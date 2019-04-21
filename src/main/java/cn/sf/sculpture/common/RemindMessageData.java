@@ -1,6 +1,7 @@
  package cn.sf.sculpture.common;
 
-import java.math.BigDecimal;
+
+import java.math.BigInteger;
 
 /**
   * 发送消息
@@ -34,7 +35,7 @@ public class RemindMessageData {
      */
     private Keyword keyword5;
     
-    public RemindMessageData(String now, Integer year, BigDecimal days) {
+    public RemindMessageData(String now, Integer year, BigInteger days) {
         super();
         this.keyword1 = new Keyword("每日记工");
         this.keyword2 = new Keyword(now);
