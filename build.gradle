@@ -79,7 +79,8 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-redis')
 	compile('org.springframework.boot:spring-boot-starter-cache')
 	compile('org.flywaydb:flyway-core:5.1.1')
-	
+		
+	compile('net.coobird:thumbnailator:0.4.8')
 	 
 	compile("com.google.code.gson:gson:2.8.0")
 	compile('com.belerweb:pinyin4j:2.5.1')
