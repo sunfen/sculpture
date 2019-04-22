@@ -6,9 +6,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.sf.sculpture.common.CommonUtil;
+import cn.sf.sculpture.document.service.DocumentService;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.ProjectSummary;
 import cn.sf.sculpture.project.domain.entity.LogRecord;
@@ -20,7 +22,9 @@ import cn.sf.sculpture.project.domain.entity.Project;
  */
 @Component
 public class ProjectConvert {
-
+    
+    @Autowired
+    private DocumentService documentService;
     
     public ProjectDTO convertDTO (Project project) throws Exception {
         if(project == null ) {
@@ -37,9 +41,14 @@ public class ProjectConvert {
         dto.setActualTotalWages(project.getActualTotalWages());
         dto.setExpectTotalWages(project.getExpectTotalWages());
         
+        dto.setImages(documentService.allDocumentByObjectId(project.getId()));
+        
         final List<LogRecord> morningLogRecords = project.getMorningLogRecords();
         final List<LogRecord> afternoonLogRecords = project.getAfternoonLogRecords();
         final List<LogRecord> eveningLogRecords = project.getEveningLogRecords();
+        
+        
+        
         
         if(!morningLogRecords.isEmpty()) {
             dto.setStartTime(morningLogRecords.get(0).getTime());
@@ -148,13 +157,13 @@ public class ProjectConvert {
                     }
                 }
             }
-
-
             contents.add(summay);
         }
         
         return contents;
     }
+    
+    
     
     public ProjectSummary convertSummary(Project project) {
         if(project == null) {
@@ -171,6 +180,7 @@ public class ProjectConvert {
         summay.setExpectTotalWages(project.getExpectTotalWages());
         summay.setActualTotalWages(project.getActualTotalWages());
         
+        summay.setImages(documentService.allDocumentByObjectId(project.getId()));
         
         final BigDecimal dailyWages = project.getDailyWages();
         // 每小时平均工资

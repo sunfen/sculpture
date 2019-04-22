@@ -3,6 +3,7 @@ package cn.sf.sculpture.project.domain;
 import java.math.BigDecimal;
 import java.util.List;
 
+import cn.sf.sculpture.document.domain.DocumentVO;
 import cn.sf.sculpture.project.domain.entity.Principal;
 
 public class ProjectDTO {
@@ -52,6 +53,8 @@ public class ProjectDTO {
     private String method;
     
     private List<LogRecordDTO> logRecords;
+    
+    private List<DocumentVO> images;
     
 	public Long getId() {
 		return id;
@@ -142,5 +145,15 @@ public class ProjectDTO {
     public void setMethod(String method) {
         this.method = method;
     }
+
+    public List<DocumentVO> getImages() {
+        return images;
+    }
+
+    public void setImages(List<DocumentVO> images) {
+        this.images = images;
+    }
+    
+    
 
 }

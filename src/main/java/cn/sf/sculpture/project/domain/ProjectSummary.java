@@ -1,6 +1,9 @@
 package cn.sf.sculpture.project.domain;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import cn.sf.sculpture.document.domain.DocumentVO;
 
 public class ProjectSummary {
 	
@@ -61,7 +64,11 @@ public class ProjectSummary {
 	 */
 	private String address;
 
-	
+    
+    private List<DocumentVO> images;
+    
+    
+    
 	public Long getId() {
 		return id;
 	}
@@ -158,5 +165,14 @@ public class ProjectSummary {
     public void setDailyWages(BigDecimal dailyWages) {
         this.dailyWages = dailyWages;
     }
+
+    public List<DocumentVO> getImages() {
+        return images;
+    }
+
+    public void setImages(List<DocumentVO> images) {
+        this.images = images;
+    }
 	
+    
 }
