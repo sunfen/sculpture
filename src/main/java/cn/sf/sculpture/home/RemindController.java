@@ -91,7 +91,6 @@ public class RemindController {
             //获取到服务器中的access_tocken
             String requestUrl = 
                 String.format("https://api.weixin.qq.com/cgi-bin/message/wxopen/template/uniform_send?access_token=%s", access_token);
-            logger.info("发送统一模板消息到:" + requestUrl);
          
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
@@ -146,8 +145,8 @@ public class RemindController {
 
                 // 进行网络请求,访问url接口
                 ResponseEntity<String> responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST, requestEntity, String.class);
-                logger.info("发送统一模板消息后接受数据:" + responseEntity);
-                logger.info("user openid:" + user.getOpenid());
+                logger.info("receive data :" + responseEntity);
+                logger.info("user openid :" + user.getOpenid());
                 if (responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK) {
                     String sessionData = responseEntity.getBody();
                     

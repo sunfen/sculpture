@@ -32,10 +32,10 @@ import net.coobird.thumbnailator.Thumbnails;
 @Service
 public class DocumentServiceImpl implements DocumentService {
 
-    @Value("${vias.url}")
+    @Value("${sculpture.url}")
     private String Base_Path;
     
-    @Value("${vias.file.upload-path}")
+    @Value("${sculpture.file.upload-path}")
     private String fahterPath;
     
     @Autowired

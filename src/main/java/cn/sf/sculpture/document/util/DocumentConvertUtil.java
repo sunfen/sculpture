@@ -20,10 +20,10 @@ import cn.sf.sculpture.document.domain.entity.Document;
  @Service
 public class DocumentConvertUtil {
 
-     @Value("${vias.url}")
+     @Value("${sculpture.url}")
      private String Base_Path;
 
-     @Value("${vias.file.upload-path}")
+     @Value("${sculpture.file.upload-path}")
      private String FILE_Path;
      
      public DocumentVO convertDocument(Document document) {

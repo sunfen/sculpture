@@ -22,6 +22,7 @@ import cn.sf.sculpture.project.domain.DTO;
 import cn.sf.sculpture.project.domain.ProjectDTO;
 import cn.sf.sculpture.project.domain.ProjectPrincipalSummary;
 import cn.sf.sculpture.project.domain.ProjectSummary;
+import cn.sf.sculpture.project.domain.entity.Project;
 import cn.sf.sculpture.project.service.PrincipalService;
 import cn.sf.sculpture.project.service.ProjectService;
 
@@ -84,9 +85,6 @@ public class ProjectController {
     }
     
  
-    
-
-
 
 
 	/**
@@ -99,15 +97,18 @@ public class ProjectController {
 	public HttpState<String> add(@RequestBody ProjectDTO project){
 		
 		try {
-			projectService.insert(project);
+		    final Project entity = projectService.insert(project);
+		    return HttpState.success(entity.getId().toString());
+		
 		} catch (Exception e) {
 			
 			e.printStackTrace();
 			return HttpState.error(e.getMessage());
 		}
-		
-		return HttpState.success("新增成功！");
 	}
+	
+	
+	
 	
 	/**
      * 导入
@@ -130,6 +131,9 @@ public class ProjectController {
         return HttpState.success("新增成功！");
     }
 	
+    
+    
+    
 	
 	/**
 	 * 删除
@@ -181,6 +185,10 @@ public class ProjectController {
         return projectService.getSummary(projectId);
     }
 	
+    
+    
+    
+    
 	@GetMapping
 	@ResponseBody
 	public ProjectDTO findNew() throws Exception{
