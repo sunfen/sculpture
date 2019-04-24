@@ -27,6 +27,7 @@ public class ShiroConfig {
         //游客，开发权限
         filterChainDefinitionMap.put("/login/**", "anon");
         filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/file/**", "anon");
         filterChainDefinitionMap.put("/message/**", "anon");
         //用户，需要角色权限 “user”
         //filterChainDefinitionMap.put("/user/**", "roles[user]");

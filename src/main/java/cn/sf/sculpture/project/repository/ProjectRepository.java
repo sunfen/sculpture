@@ -44,7 +44,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>{
     @Query(value = "select distinct p.* from project p "
         + "     left join log_record l on p.id = l.afternoon_project_id "
         + "     or p.id = l.evening_project_id or p.id = l.morning_project_id "
-        + "     where p.user_id = :userId and date_format(l.time, '%Y') = :year  ; ", nativeQuery = true)
+        + "     where p.user_id = :userId and date_format(p.create_time, '%Y') = :year  ; ", nativeQuery = true)
     List<Project> findByYear(@Param("userId") Long userId, @Param("year") String year);
 
     /**

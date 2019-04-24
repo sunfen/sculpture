@@ -1,5 +1,6 @@
 package cn.sf.sculpture.project.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -34,9 +35,10 @@ public interface ProjectService {
     /**
      * @param username
      * @return
+     * @throws IOException 
      * @throws Exception 
      */
-    Project insert(ProjectDTO project);
+    Project insert(ProjectDTO project) throws IOException;
 
     void deleted(Long projectId);
 

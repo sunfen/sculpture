@@ -114,7 +114,6 @@ public class DocumentServiceImpl implements DocumentService {
            }
             documentRepository.delete(doc);
         }
-         
     }
 
 
@@ -150,13 +149,38 @@ public class DocumentServiceImpl implements DocumentService {
          final List<Document> results = documentRepository.findByObjectId(objectId);
          return convertUtil.convertDocument(results);
     }
+    
+    
+    
+    
 
     /** (non-Javadoc)
      * @see com.ysxx.vias.common.service.DocumentService#deleteDocumentById(java.lang.String)
      */
     @Override
+    @Transactional
     public void deleteDocumentById(Long id) {
         documentRepository.deleteById(id);
+    }
+
+    
+    
+    
+    
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.document.service.DocumentService#deleteDocumentByIds(java.util.List)
+     */
+    @Override
+    @Transactional
+    public void deleteDocumentByIds(List<Long> removeImages) throws IOException {
+        List<Document> documents = documentRepository.findAllById(removeImages);
+        for(Document doc : documents) {
+            if (doc != null) {
+               this.deleteDoucumentByPath(doc.getPathName(), doc.getMinPath());
+           }
+            documentRepository.delete(doc);
+        }
+         
     }
 
     

@@ -56,6 +56,8 @@ public class ProjectDTO {
     
     private List<DocumentVO> images;
     
+    private List<Long> removeImages;
+    
 	public Long getId() {
 		return id;
 	}
@@ -153,7 +155,13 @@ public class ProjectDTO {
     public void setImages(List<DocumentVO> images) {
         this.images = images;
     }
-    
-    
+
+    public List<Long> getRemoveImages() {
+        return removeImages;
+    }
+
+    public void setRemoveImages(List<Long> removeImages) {
+        this.removeImages = removeImages;
+    }
 
 }

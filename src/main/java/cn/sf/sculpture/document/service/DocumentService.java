@@ -42,5 +42,11 @@ public interface DocumentService {
      * @return
      */
     List<DocumentVO> allDocumentByObjectId(Long objectId);
+
+    /**
+     * @param removeImages
+     * @throws IOException 
+     */
+    void deleteDocumentByIds(List<Long> removeImages) throws IOException;
     
 }

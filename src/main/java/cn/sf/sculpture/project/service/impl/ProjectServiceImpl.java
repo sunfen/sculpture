@@ -1,6 +1,7 @@
 package cn.sf.sculpture.project.service.impl;
 
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import cn.sf.sculpture.common.CommonUtil;
+import cn.sf.sculpture.document.service.DocumentService;
 import cn.sf.sculpture.project.domain.DTO;
 import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.ProjectDTO;
@@ -50,6 +52,8 @@ public class ProjectServiceImpl implements ProjectService {
     private PrincipalService principalService;
     @Autowired
     private WagesRecordService wagesRecordService;
+    @Autowired
+    private DocumentService documentService;
     
     
 
@@ -138,7 +142,7 @@ public class ProjectServiceImpl implements ProjectService {
     
     @Override
     @Transactional
-    public Project insert(final ProjectDTO project) {
+    public Project insert(final ProjectDTO project) throws IOException {
         Assert.notNull(project, "project is null");
         
         final User user = userService.findCurrentUser();
@@ -172,6 +176,12 @@ public class ProjectServiceImpl implements ProjectService {
         BigDecimal expectTotalWages = dailyWages.multiply(new BigDecimal(totalHour));
         entity.setExpectTotalWages(expectTotalWages);
        
+        //删除图片
+        if(project.getRemoveImages() != null && !project.getRemoveImages().isEmpty()) {
+            documentService.deleteDocumentByIds(project.getRemoveImages());
+        }
+        
+        
         return repository.save(entity);
                
     }
