@@ -1,8 +1,10 @@
 package cn.sf.sculpture.document.service.impl;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -117,21 +119,30 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
 
-    public void deleteDoucumentByPath(String pathStr, String minPathStr) throws IOException {
+    public void deleteDoucumentByPath(String pathStr, String minPathStr) {
         final Path path = Paths.get(this.fahterPath);
         final Set<String> attrViews = path.getFileSystem().supportedFileAttributeViews();
 
         if (pathStr != null && !pathStr.isEmpty()) {
-            if (!attrViews.contains("posix")) {
-                Files.deleteIfExists(Paths.get(pathStr.replace("file:///", "")));
-                if (minPathStr != null && !minPathStr.isEmpty()) {
-                    Files.deleteIfExists(Paths.get(pathStr.replace("file:///", "")));
-                }
-            } else {
-                Files.deleteIfExists(Paths.get(pathStr.replace("file://", "")));
-                if (minPathStr != null && !minPathStr.isEmpty()) {
+            try {
+                if (!attrViews.contains("posix")) {
+                        Files.deleteIfExists(Paths.get(pathStr.replace("file:///", "")));
+       
+                    if (minPathStr != null && !minPathStr.isEmpty()) {
+                        Files.deleteIfExists(Paths.get(pathStr.replace("file:///", "")));
+                    }
+                } else {
                     Files.deleteIfExists(Paths.get(pathStr.replace("file://", "")));
+                    if (minPathStr != null && !minPathStr.isEmpty()) {
+                        Files.deleteIfExists(Paths.get(pathStr.replace("file://", "")));
+                    }
                 }
+            } catch (FileNotFoundException ex) {
+                System.out.print("File not found");
+            } catch(AccessDeniedException e) {
+                System.out.print("File access denied");
+            } catch (IOException e) {
+                System.out.print("File IOException");
             }
         }
     }
