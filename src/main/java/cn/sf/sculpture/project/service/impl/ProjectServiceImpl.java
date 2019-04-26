@@ -114,7 +114,7 @@ public class ProjectServiceImpl implements ProjectService {
      */
     @Override
     @Transactional
-    public void importer(ProjectDTO projectDTO, List<LogRecordDTO> logRecords) {
+    public Project importer(ProjectDTO projectDTO, List<LogRecordDTO> logRecords) {
         final User user = userService.findCurrentUser();
         
         Project entity = new Project();
@@ -140,7 +140,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
          
         logRecordService.inserts(logRecords, entity, user);
-        
+        return entity;
     }
     
     

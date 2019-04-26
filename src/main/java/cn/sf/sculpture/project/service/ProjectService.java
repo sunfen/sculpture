@@ -96,8 +96,9 @@ public interface ProjectService {
     /**
      * @param project
      * @param logRecords
+     * @return 
      */
-    void importer(ProjectDTO project, List<LogRecordDTO> logRecords);
+    Project importer(ProjectDTO project, List<LogRecordDTO> logRecords);
 
     /**
      * @param valueOf

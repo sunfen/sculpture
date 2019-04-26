@@ -120,15 +120,15 @@ public class ProjectController {
     public HttpState<String> importer(@RequestBody ProjectDTO project){
         
         try {
-            projectService.importer(project, project.getLogRecords());
+            final Project entity = projectService.importer(project, project.getLogRecords());
     
+            return HttpState.success(entity.getId().toString());
         } catch (Exception e) {
             
             e.printStackTrace();
             return HttpState.error(e.getMessage());
         }
         
-        return HttpState.success("新增成功！");
     }
 	
     
