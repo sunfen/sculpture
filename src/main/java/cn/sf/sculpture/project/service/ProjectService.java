@@ -3,6 +3,7 @@ package cn.sf.sculpture.project.service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -97,6 +98,20 @@ public interface ProjectService {
      * @param logRecords
      */
     void importer(ProjectDTO project, List<LogRecordDTO> logRecords);
+
+    /**
+     * @param valueOf
+     * @param id
+     * @return
+     */
+    Map<String, Object> countDaysByYearAndUserId(Integer valueOf, Long id);
+
+    /**
+     * @param valueOf
+     * @param id
+     * @return
+     */
+    Map<String, Object> countWagesByYearAndUserId(Integer valueOf, Long id);
 
 	
 }

@@ -3,8 +3,11 @@ package cn.sf.sculpture.project.service.impl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import cn.sf.sculpture.common.CommonUtil;
+import cn.sf.sculpture.common.Statistics;
 import cn.sf.sculpture.document.service.DocumentService;
 import cn.sf.sculpture.project.domain.DTO;
 import cn.sf.sculpture.project.domain.LogRecordDTO;
@@ -319,6 +323,70 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectSummary getSummary(Long projectId) throws Exception {
         // TODO Auto-generated method stub
          return projectConvert.convertSummary(repository.getOne(projectId));
+    }
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#countDaysByYearAndUserId(java.lang.Integer, java.lang.Long)
+     */
+    @Override
+    public Map<String, Object> countDaysByYearAndUserId(Integer year, Long userId) {
+         final List<Map<String, Object>> counts = repository.countByUserIdAndYear(year, userId);
+         
+         Map<String,Object> results = new HashMap<>();
+         
+         List<String> names = new ArrayList<>();
+         List<String[]> statistics = new ArrayList<>();
+         
+         final String[] first = {"项目","amount"};
+         statistics.add(first);
+         
+         for(final Map<String, Object> count : counts) {
+             String name = (String)count.get("name");
+             BigInteger data = (BigInteger)count.get("count");
+
+             final String[] value = {name, data.toString()};
+             statistics.add(value);
+             names.add(name);
+         }
+         
+         results.put("names", names);
+         results.put("values", statistics);
+         return results;
+    }
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.ProjectService#countWagesByYearAndUserId(java.lang.Integer, java.lang.Long)
+     */
+    @Override
+    public Map<String, Object> countWagesByYearAndUserId(Integer year, Long userId) {
+        final Map<String, Object> counts = repository.countWagesByUserIdAndYear(userId, year);
+        
+        BigDecimal actualTotalWages = (BigDecimal)counts.get("actualTotalWages");
+        BigDecimal expectTotalWages = (BigDecimal)counts.get("expectTotalWages");
+        
+        actualTotalWages = actualTotalWages == null ? new BigDecimal(0) : actualTotalWages ;
+        expectTotalWages = expectTotalWages == null ? new BigDecimal(0) : expectTotalWages ;
+        
+        Map<String,Object> results = new HashMap<>();
+        
+        List<String> names = new ArrayList<>();
+        List<Statistics> statistics = new ArrayList<>();
+        
+        final BigDecimal notWages = expectTotalWages.subtract(actualTotalWages);
+        final String already = "已结：" + actualTotalWages + " 元";
+        final String notName = "未发：" + notWages + " 元";
+       
+        names.add(already);
+        names.add(notName);
+        statistics.add(new Statistics(already, actualTotalWages));
+        statistics.add(new Statistics(notName, notWages));
+        
+        results.put("names", names);
+        results.put("values", statistics);
+        results.put("total", expectTotalWages);
+        return results;
     }
 
 

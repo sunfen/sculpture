@@ -56,7 +56,7 @@ public class ProjectDTO {
     
     private List<DocumentVO> images;
     
-    private List<Long> removeImages;
+    private List<String> removeImages;
     
 	public Long getId() {
 		return id;
@@ -156,11 +156,11 @@ public class ProjectDTO {
         this.images = images;
     }
 
-    public List<Long> getRemoveImages() {
+    public List<String> getRemoveImages() {
         return removeImages;
     }
 
-    public void setRemoveImages(List<Long> removeImages) {
+    public void setRemoveImages(List<String> removeImages) {
         this.removeImages = removeImages;
     }
 

@@ -2,6 +2,7 @@ package cn.sf.sculpture.project.service.impl;
 
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import cn.sf.sculpture.common.CommonUtil;
+import cn.sf.sculpture.common.Statistics;
 import cn.sf.sculpture.common.domain.IndexDTO;
 import cn.sf.sculpture.project.domain.LogRecordDTO;
 import cn.sf.sculpture.project.domain.entity.LogRecord;
@@ -446,6 +448,44 @@ public class LogRecordServiceImpl implements LogRecordService {
        
          
         return repository.countByYear(year);
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see cn.sf.sculpture.project.service.LogRecordService#countByYearAndUserId(java.lang.Integer, java.lang.Long)
+     */
+    @Override
+    public Map<String, Object> countByYearAndUserId(Integer year, Long userId) {
+        //是否是 闰年 
+        final boolean leapYear = LocalDate.now().isLeapYear();
+        Long total = 365L;
+        if(leapYear) {
+            total = 366L;
+        }
+        final BigInteger count = repository.countByYearAndUserId(year, userId);
+        final long countL = count.longValue();
+
+        
+        List<Statistics> statistics = new ArrayList<>();
+        
+        final String alreadyName = "工作：" + countL + " 天";
+        statistics.add(new Statistics(alreadyName, new BigDecimal(count)));
+         
+        long notDays = total-countL;
+        final String notName = "休息：" + notDays + " 天";
+        statistics.add(new Statistics(notName, new BigDecimal(notDays)));
+
+        List<String> names = new ArrayList<>();
+        names.add(notName);
+        names.add(alreadyName);
+         
+         
+        Map<String,Object> results = new HashMap<>();
+        results.put("names", names);
+        results.put("values", statistics);
+
+        return results;
     }
 
 

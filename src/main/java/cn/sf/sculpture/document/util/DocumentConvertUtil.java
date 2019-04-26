@@ -50,7 +50,7 @@ public class DocumentConvertUtil {
             vo.setPath(Base_Path + document.getPathName().replaceAll(baseString, windowPath + "/"));
             
             if (document.getMinPath() != null) {
-                vo.setMinPath(Base_Path + document.getMinPath().replaceAll(baseString, windowPath));
+                vo.setMinPath(Base_Path + document.getMinPath().replaceAll(baseString, windowPath+ "/"));
             }
         } else {
             

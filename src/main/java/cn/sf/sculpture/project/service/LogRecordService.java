@@ -70,4 +70,11 @@ public interface LogRecordService {
      */
     List<Map<String, Object>> count(int year);
 
+    /**
+     * @param valueOf
+     * @param id
+     * @return
+     */
+    Map<String, Object> countByYearAndUserId(Integer valueOf, Long id);
+
 }

@@ -8,6 +8,7 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -128,13 +129,13 @@ public class DocumentServiceImpl implements DocumentService {
                 if (!attrViews.contains("posix")) {
                         Files.deleteIfExists(Paths.get(pathStr.replace("file:///", "")));
        
-                    if (minPathStr != null && !minPathStr.isEmpty()) {
+                    if (pathStr != null && !pathStr.isEmpty()) {
                         Files.deleteIfExists(Paths.get(pathStr.replace("file:///", "")));
                     }
                 } else {
-                    Files.deleteIfExists(Paths.get(pathStr.replace("file://", "")));
+                    Files.deleteIfExists(Paths.get(minPathStr.replace("file://", "")));
                     if (minPathStr != null && !minPathStr.isEmpty()) {
-                        Files.deleteIfExists(Paths.get(pathStr.replace("file://", "")));
+                        Files.deleteIfExists(Paths.get(minPathStr.replace("file://", "")));
                     }
                 }
             } catch (FileNotFoundException ex) {
@@ -183,13 +184,17 @@ public class DocumentServiceImpl implements DocumentService {
      */
     @Override
     @Transactional
-    public void deleteDocumentByIds(List<Long> removeImages) throws IOException {
-        List<Document> documents = documentRepository.findAllById(removeImages);
+    public void deleteDocumentByIds(List<String> removeImages) throws IOException {
+        List<Long> ids = new ArrayList<>();
+        for(String i : removeImages) {
+            ids.add(Long.valueOf(i));
+        }
+        List<Document> documents = documentRepository.findAllById(ids);
         for(Document doc : documents) {
             if (doc != null) {
                this.deleteDoucumentByPath(doc.getPathName(), doc.getMinPath());
            }
-            documentRepository.delete(doc);
+            documentRepository.deleteById(doc.getId());
         }
          
     }

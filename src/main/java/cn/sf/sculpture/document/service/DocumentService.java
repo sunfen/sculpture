@@ -47,6 +47,6 @@ public interface DocumentService {
      * @param removeImages
      * @throws IOException 
      */
-    void deleteDocumentByIds(List<Long> removeImages) throws IOException;
+    void deleteDocumentByIds(List<String> removeImages) throws IOException;
     
 }

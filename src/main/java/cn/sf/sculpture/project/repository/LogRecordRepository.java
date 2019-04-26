@@ -1,6 +1,7 @@
 package cn.sf.sculpture.project.repository;
 
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -46,5 +47,13 @@ public interface LogRecordRepository extends JpaRepository<LogRecord, Long>{
         "    left join  log_record l on u.id = l.user_id and date_format(l.time, '%Y') = :year " + 
         "    group by u.id; ", nativeQuery = true)
     List<Map<String, Object>> countByYear(@Param("year") int year);
+    
+    /**
+     * @return
+     */
+    @Query(value = "select COUNT(l.id) as count from user u " + 
+        "    left join  log_record l on u.id = l.user_id and date_format(l.time, '%Y') = :year " + 
+        "    where u.id = :userId ; ", nativeQuery = true)
+    BigInteger countByYearAndUserId(@Param("year") int year, @Param("userId") Long userId);
 	
 }
